@@ -7,21 +7,26 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
-import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
 
-const Verification = ({navigation}) => {
+const Verification = ({route, navigation}) => {
   const auth = context();
   const firstTextInputRef = useRef(null);
   const secondTextInputRef = useRef(null);
   const thirdTextInputRef = useRef(null);
   const fourthTextInputRef = useRef(null);
-  
-  const [otpArray, setOtpArray] = useState(['', '', '', '']);
+  const fifthTextInputRef = useRef(null);
+  const sixthTextInputRef = useRef(null);
 
-  const onConfirm = async (auth) => {
-    auth.saveToken()
-    .then(() => {
+  
+  const [otpArray, setOtpArray] = useState(['', '', '', '', '', '']);
+
+  const onConfirm = async () => {
+    let params = {};
+    params = {...route.params, code: otpArray.toString().split(",").join("")}
+    auth.saveMFA(params)
+    .then((data) => {
+      console.log('data', data)
       navigation.replace('Accounts');
     })
     .catch((error) => {
@@ -47,6 +52,10 @@ const Verification = ({navigation}) => {
           thirdTextInputRef.current.focus();
         } else if (index === 2) {
           fourthTextInputRef.current.focus();
+        } else if (index === 3) {
+          fifthTextInputRef.current.focus();
+        } else if (index === 4) {
+          sixthTextInputRef.current.focus();
         }
       }
     };
@@ -62,6 +71,10 @@ const Verification = ({navigation}) => {
           secondTextInputRef.current.focus();
         } else if (index === 3) {
           thirdTextInputRef.current.focus();
+        } else if (index === 4) {
+          fourthTextInputRef.current.focus();
+        } else if (index === 5) {
+          fifthTextInputRef.current.focus();
         }
 
         /**
@@ -103,6 +116,8 @@ const Verification = ({navigation}) => {
           secondTextInputRef,
           thirdTextInputRef,
           fourthTextInputRef,
+          fifthTextInputRef,
+          sixthTextInputRef
         ].map((textInputRef, index) => (
           <TextInput
             style={styles.TextInput}
@@ -164,7 +179,7 @@ const styles = StyleSheet.create({
   },
   TextInput: {
     flex: 1,
-    width: "30%",
+    width: "15%",
     height:40,
     paddingLeft: 15,
     paddingRight: 15,

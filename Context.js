@@ -16,13 +16,48 @@ export const Provider = ({ children }) => {
   const [state, setState] = useState(initialState);
   
   // Update AsyncStorage & context state
-  const saveToken = async () => {
+  const saveToken = async (auth) => {
     try {
-      await AsyncStorage.setItem('userToken', 'abc');
-      setState({token: 'valid'})
-    } 
-    catch (error) {
-      Promise.reject(error);
+      const response = await fetch('https://pa0ykzslfh.execute-api.ap-southeast-1.amazonaws.com/auth/login', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: auth.username,
+        password: auth.password,
+      }),
+      })
+      const responseJson = await response.json();
+      return responseJson
+    }
+    catch(error) {
+        console.error(error);
+    }
+  }
+
+  const saveMFA = async (auth) => {
+    try {
+      console.log('auth', auth)
+      const response = await fetch('https://pa0ykzslfh.execute-api.ap-southeast-1.amazonaws.com/password/mfa', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: auth.username,
+        code: auth.code,
+        hash: auth.hash,
+        session: auth.session,
+      }),
+      })
+      const responseJson = await response.json();
+      return responseJson
+    }
+    catch(error) {
+        console.error(error);
     }
   }
 
@@ -47,7 +82,7 @@ export const Provider = ({ children }) => {
   }
 
   return (
-    <MyContext.Provider value={{ state, saveToken, getToken, removeToken }}>
+    <MyContext.Provider value={{ state, saveToken, saveMFA, getToken, removeToken }}>
       {children}
     </MyContext.Provider>
   );

@@ -6,27 +6,50 @@ import {
   TextInput,
   Keyboard,
   TouchableOpacity,
+  ActivityIndicator,
   Alert,
 } from "react-native";
 import {GenericStyles} from '../styles/Styles';
-//import {Context as context} from './Context';
+import {Context as context} from '../../Context';
 
 const Login = ({navigation}) => {
-  //const auth = context();
-  const [login, setLogin] = useState({"email": "", "password": ""})
+  const auth = context();
+  const [login, setLogin] = useState({"username": "", "password": "", "error": "", "isLoading": false})
   const passwordInputRef = useRef();
 
   const onLogin = () => {
-    if (!login.email) {
-      Alert.alert('Please fill Email');
+    if (!login.username) {
+      Alert.alert('Please fill Username');
       return;
     }
     if (!login.password) {
       Alert.alert('Please fill Password');
       return;
     }
-    //auth.setAuth({token: 'valid'})
-    navigation.navigate('Verification');
+    setLogin((prevState) => ({
+      ...prevState,
+      'isLoading': true,
+    }))
+    auth.saveToken(login)
+    .then((data) => {
+      if (data.status === 'mfa') {
+        navigation.navigate('Verification', {
+          hash: data.hash,
+          session: data.session.Session,
+          username: login.username
+        });
+      }
+      else { 
+        setLogin((prevState) => ({
+          ...prevState,
+          'error': 'Invalid username or password',
+          'isLoading': false,
+        }))
+      }
+    })
+    .catch((error) => {
+      navigation.navigate('Login');
+    })
   };
 
   const handleInput = (name) => (value) => {
@@ -50,7 +73,7 @@ const Login = ({navigation}) => {
             passwordInputRef.current &&
             passwordInputRef.current.focus()
           }
-          onChangeText={handleInput('email')}
+          onChangeText={handleInput('username')}
           underlineColorAndroid="#f000"
           blurOnSubmit={false}
         /> 
@@ -72,6 +95,12 @@ const Login = ({navigation}) => {
       <TouchableOpacity>
         <Text style={styles.forgot_button}>Forgot Password?</Text> 
       </TouchableOpacity> 
+      {login.error &&
+        <Text style={styles.error}>{login.error}</Text>
+      }
+      <View>
+        <ActivityIndicator size="large" animating={login.isLoading} />
+      </View>
       <TouchableOpacity
         style={GenericStyles.btnWrapper}
         onPress={onLogin}
@@ -91,6 +120,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  error: {
+    color: "#ff0000",
   },
   title:{
     fontWeight: "bold",
