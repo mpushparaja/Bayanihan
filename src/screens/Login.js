@@ -11,10 +11,11 @@ import {
 } from "react-native";
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
+import Loader from './Loader';
 
 const Login = ({navigation}) => {
   const auth = context();
-  const [login, setLogin] = useState({"username": "", "password": "", "error": "", "isLoading": false})
+  const [login, setLogin] = useState({"username": "", "password": "", "error": "", "loading": false})
   const passwordInputRef = useRef();
 
   const onLogin = () => {
@@ -28,14 +29,19 @@ const Login = ({navigation}) => {
     }
     setLogin((prevState) => ({
       ...prevState,
-      'isLoading': true,
+      'loading': true,
     }))
     auth.saveToken(login)
     .then((data) => {
       if (data.status === 'mfa') {
+        setLogin((prevState) => ({
+          ...prevState,
+          'error': '',
+          'loading': false,
+        }))
         navigation.navigate('Verification', {
           hash: data.hash,
-          session: data.session.Session,
+          session: data.session,
           username: login.username
         });
       }
@@ -43,7 +49,7 @@ const Login = ({navigation}) => {
         setLogin((prevState) => ({
           ...prevState,
           'error': 'Invalid username or password',
-          'isLoading': false,
+          'loading': false,
         }))
       }
     })
@@ -61,7 +67,8 @@ const Login = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-       <Text style={styles.title}>Login Screen</Text>
+      <Loader loading={login.loading} />
+      <Text style={styles.title}>Login Screen</Text>
       <View style={styles.inputView}>
         <TextInput
           style={styles.TextInput}
@@ -98,9 +105,6 @@ const Login = ({navigation}) => {
       {login.error &&
         <Text style={styles.error}>{login.error}</Text>
       }
-      <View>
-        <ActivityIndicator size="large" animating={login.isLoading} />
-      </View>
       <TouchableOpacity
         style={GenericStyles.btnWrapper}
         onPress={onLogin}

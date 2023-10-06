@@ -1,7 +1,8 @@
-import React  from 'react';
+import React, {useState}  from 'react';
 import {
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -12,24 +13,38 @@ import {Context as context} from './Context';
 
 const Stack = createNativeStackNavigator();
 
-const MyRoutes = ({navigation}) => {
+const MyRoutes = () => {
   const auth = context();
-  const onLogout = async () => {
+  const [isProtectedRoutes, setProtected] = useState(false)
+  const onLogout = () => {
     auth.removeToken()
-    .catch((error) => {
-      navigation.navigate('Login');
+    .then(() => {
+      setProtected(false)
     })
   };
 
+  const showConfirmDialog = () => {
+    Alert.alert('', 'Are you sure to Logout', [
+      {text: 'Yes', onPress: onLogout},
+      {
+        text: 'No',
+      }
+    ]);
+  }
+
+  const handleVerification = (data) => {
+    setProtected(data)
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        {auth.state.token ? (
+      <Stack.Navigator>
+        {isProtectedRoutes ? (
           <>
             <Stack.Screen name="Accounts" component={Accounts} 
               options={{ 
                 headerRight: () => (
-                  <TouchableOpacity onPress={onLogout}>
+                  <TouchableOpacity onPress={showConfirmDialog}>
                     <Image source={require("./assets/logout.png")} />
                   </TouchableOpacity>
                 ),
@@ -38,12 +53,19 @@ const MyRoutes = ({navigation}) => {
           </>
         ) : (
           <>
-            <Stack.Screen
+           <Stack.Screen
             name="Login"
-            component={Login}
             options={{title: 'Login'}}
-            />
-            <Stack.Screen name="Verification" component={Verification}  options={{title: 'Login'}} />
+            >
+            {(props) => (
+              <Login {...props} />
+            )}
+            </Stack.Screen>
+            <Stack.Screen name="Verification" options={{title: 'Login'}} >
+            {(props) => (
+              <Verification {...props} onVerification={handleVerification} />
+            )}
+            </Stack.Screen>
           </>
         ) 
         }

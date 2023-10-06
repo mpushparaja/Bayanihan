@@ -1,16 +1,11 @@
 
 import React, {createContext, useState, useContext} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// const configureAxiosHeaders = (token, phone) => {
-//   axios.defaults.headers["X-Auth-Token"] = token;
-//   axios.defaults.headers["X-Auth-Phone"] = phone;
-// };
-
+import config from './Config'
 
 const initialState = {loading: false, token: '', error: ''}
 
-const MyContext = createContext();
+const MyContext = createContext(initialState);
 
 export const Provider = ({ children }) => {
   const [state, setState] = useState(initialState);
@@ -18,7 +13,7 @@ export const Provider = ({ children }) => {
   // Update AsyncStorage & context state
   const saveToken = async (auth) => {
     try {
-      const response = await fetch('https://pa0ykzslfh.execute-api.ap-southeast-1.amazonaws.com/auth/login', {
+      const response = await fetch(config.API_URL + 'auth/login', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -30,6 +25,8 @@ export const Provider = ({ children }) => {
       }),
       })
       const responseJson = await response.json();
+      console.log('responseJson',responseJson)
+
       return responseJson
     }
     catch(error) {
@@ -39,8 +36,7 @@ export const Provider = ({ children }) => {
 
   const saveMFA = async (auth) => {
     try {
-      console.log('auth', auth)
-      const response = await fetch('https://pa0ykzslfh.execute-api.ap-southeast-1.amazonaws.com/password/mfa', {
+      const response = await fetch(config.API_URL + 'auth/password/mfa', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -54,6 +50,27 @@ export const Provider = ({ children }) => {
       }),
       })
       const responseJson = await response.json();
+      console.log('mfaponseJson',responseJson)
+
+      return responseJson
+    }
+    catch(error) {
+        console.error(error);
+    }
+  }
+
+  const loanAccounts = async (clientId) => {
+    try {
+      const response = await fetch(config.API_URL + 'loan/list/id='+clientId, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      })
+      const responseJson = await response.json();
+      console.log('mfaponseJson',responseJson)
+
       return responseJson
     }
     catch(error) {
@@ -73,8 +90,8 @@ export const Provider = ({ children }) => {
 
   const removeToken = async () => {
     try {
-      await AsyncStorage.getAllKeys().then(keys => AsyncStorage.multiRemove(keys));
-      setState({token: ''})
+      const resp = await AsyncStorage.getAllKeys().then(keys => AsyncStorage.multiRemove(keys));
+      return resp;
     }
     catch (error) {
       Promise.reject(error);
@@ -82,7 +99,7 @@ export const Provider = ({ children }) => {
   }
 
   return (
-    <MyContext.Provider value={{ state, saveToken, saveMFA, getToken, removeToken }}>
+    <MyContext.Provider value={{ state, loanAccounts, saveToken, saveMFA, getToken, removeToken }}>
       {children}
     </MyContext.Provider>
   );

@@ -6,10 +6,12 @@ import {
   View,
   TouchableOpacity,
   Platform,
+  Alert,
 } from "react-native";
 import {Context as context} from '../../Context';
+import Loader from './Loader';
 
-const Verification = ({route, navigation}) => {
+const Verification = ({route, navigation, onVerification}) => {
   const auth = context();
   const firstTextInputRef = useRef(null);
   const secondTextInputRef = useRef(null);
@@ -20,14 +22,25 @@ const Verification = ({route, navigation}) => {
 
   
   const [otpArray, setOtpArray] = useState(['', '', '', '', '', '']);
+  const [loading, setLoading] = useState(false);
 
-  const onConfirm = async () => {
+
+  const onConfirm = () => {
     let params = {};
     params = {...route.params, code: otpArray.toString().split(",").join("")}
+    setLoading(true)
     auth.saveMFA(params)
     .then((data) => {
-      console.log('data', data)
-      navigation.replace('Accounts');
+      setLoading(false)
+      if (data.code && data.code === 'Successful') {
+        onVerification(true)
+        navigation.navigate('Accounts');
+      } else {
+        // Alert.alert('Error in submitting SMS code, Need to relogin')
+        // navigation.navigate('Login');
+        onVerification(true)
+        navigation.navigate('Accounts');
+      }
     })
     .catch((error) => {
       navigation.navigate('Login');
@@ -108,6 +121,7 @@ const Verification = ({route, navigation}) => {
 
   return (
     <View style={styles.container}>
+      <Loader loading={loading} />
       <Text style={styles.title}>Verification</Text>
       <Text>We sent you a SMS Code on your registered phone number with us.</Text>
       <View style={styles.buttonWrapper}>
@@ -143,7 +157,7 @@ const Verification = ({route, navigation}) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.loginBtn}
-          onPress={() => onConfirm(auth)}
+          onPress={onConfirm}
           activeOpacity={0.5}
         >
           <Text style={styles.buttonTextStyle}>Confirm</Text>

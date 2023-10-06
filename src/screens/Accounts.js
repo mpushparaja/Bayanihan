@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
   StyleSheet,
   Text,
@@ -10,6 +10,13 @@ import {Context as context} from '../../Context';
 
 const Accounts = ({navigation}) => {
   const auth = context();
+  const [loanData, setLoan] = useState([]) 
+  useEffect(() => {
+    auth.loanAccounts('kmglj7vbudsosei85es4rckra')
+    .then((data) => {
+      setLoan(data)
+    })
+  }, [])
   return (
     <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
       <View style={styles.container}>
@@ -24,7 +31,7 @@ const Accounts = ({navigation}) => {
         <View>
           <>
             <Text style={styles.subTitle}>Loan Accounts</Text>
-            <Table headerView={false} />
+            <Table headerView={false} data={loanData} />
           </>
         </View>
         <View>

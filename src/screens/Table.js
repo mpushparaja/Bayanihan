@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native
 //import { MaterialCommunityIcons } from '@expo/vector-icons';
 import _ from "lodash"
 
-export default function Table({headerView = null}) {
+export default function Table({headerView = null, data=[]}) {
   const [ columns, setColumns ] = useState([
     "Payment Date",
     "Type",
@@ -13,6 +13,7 @@ export default function Table({headerView = null}) {
   ])
   const [ direction, setDirection ] = useState(null)
   const [ selectedColumn, setSelectedColumn ] = useState(null)
+  console.log('datadata', data)
   const [ pets, setPets ] = useState([
     {
         date: "01-01-2023",
