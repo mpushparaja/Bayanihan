@@ -8,10 +8,10 @@ export const GenericStyles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginTop: 40,
-        backgroundColor: "#FF1493",
+        backgroundColor: "#ffc107",
     },
     buttonTextStyle: {
-        color: "#FFF",
+        color: "#000",
         fontSize: 16,
         paddingVertical: 10,
     },

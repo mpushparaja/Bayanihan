@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: 16,
-    backgroundColor: "#898989",
+    backgroundColor: "#01403c",
     paddingTop: 8,
     paddingLeft: 8,
     paddingBottom: 8,

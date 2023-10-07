@@ -43,6 +43,10 @@ const MyRoutes = () => {
           <>
             <Stack.Screen name="Accounts" component={Accounts} 
               options={{ 
+                headerTintColor: '#fff',
+                headerStyle: {
+                  backgroundColor: '#01403c'
+                },
                 headerRight: () => (
                   <TouchableOpacity onPress={showConfirmDialog}>
                     <Image source={require("./assets/logout.png")} />
@@ -55,13 +59,25 @@ const MyRoutes = () => {
           <>
            <Stack.Screen
             name="Login"
-            options={{title: 'Login'}}
+            options={{
+              title: 'Login',
+              headerTintColor: '#fff',
+              headerStyle: {
+                backgroundColor: '#01403c'
+              },
+            }}
             >
             {(props) => (
               <Login {...props} />
             )}
             </Stack.Screen>
-            <Stack.Screen name="Verification" options={{title: 'Login'}} >
+            <Stack.Screen name="Verification" options={{
+              title: 'Login',
+              headerTintColor: '#fff',
+              headerStyle: {
+                backgroundColor: '#01403c'
+              },
+              }} >
             {(props) => (
               <Verification {...props} onVerification={handleVerification} />
             )}

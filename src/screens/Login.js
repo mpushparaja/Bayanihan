@@ -6,7 +6,7 @@ import {
   TextInput,
   Keyboard,
   TouchableOpacity,
-  ActivityIndicator,
+  Image,
   Alert,
 } from "react-native";
 import {GenericStyles} from '../styles/Styles';
@@ -15,7 +15,7 @@ import Loader from './Loader';
 
 const Login = ({navigation}) => {
   const auth = context();
-  const [login, setLogin] = useState({"username": "", "password": "", "error": "", "loading": false})
+  const [login, setLogin] = useState({"username": "", "password": "", "error": "", "loading": false, hidePassword: true})
   const passwordInputRef = useRef();
 
   const onLogin = () => {
@@ -65,15 +65,22 @@ const Login = ({navigation}) => {
     }))
   }
 
+  const setPasswordVisibility = () => {
+    setLogin((prevState) => ({
+      ...prevState,
+      'hidePassword': !login.hidePassword,
+    }))
+  }
+
   return (
     <View style={styles.container}>
       <Loader loading={login.loading} />
-      <Text style={styles.title}>Login Screen</Text>
+      <Image source={require("../../assets/splashlogo.png")} />
       <View style={styles.inputView}>
         <TextInput
           style={styles.TextInput}
           placeholder="Username"
-          placeholderTextColor="#003f5c"
+          placeholderTextColor="#ccc"
           autoCapitalize="none"
           returnKeyType="next"
           onSubmitEditing={() =>
@@ -90,14 +97,17 @@ const Login = ({navigation}) => {
           style={styles.TextInput}
           placeholder="Password"
           ref={passwordInputRef}
-          placeholderTextColor="#003f5c"
+          placeholderTextColor="#ccc"
           onSubmitEditing={Keyboard.dismiss}
-          secureTextEntry={true}
+          secureTextEntry={login.hidePassword}
           returnKeyType="next"
           underlineColorAndroid="#f000"
           blurOnSubmit={false}
           onChangeText={handleInput('password')}
         /> 
+        <TouchableOpacity activeOpacity={0.8} style={styles.touachableButton} onPress={setPasswordVisibility}>
+            <Image source={(login.hidePassword) ? require('../../assets/eye.png') : require('../../assets/eye-slash.png')} style={styles.buttonImage} />
+          </TouchableOpacity>
       </View> 
       <TouchableOpacity>
         <Text style={styles.forgot_button}>Forgot Password?</Text> 
@@ -125,6 +135,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  touachableButton: {
+    position: 'absolute',
+    top: 5,
+    right: 3,
+    height: 40,
+    width: 35,
+    padding: 2
+  },
+  buttonImage: {
+    resizeMode: 'contain',
+    height: '70%',
+    width: '70%',
+  },
   error: {
     color: "#ff0000",
   },
@@ -151,9 +174,9 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     borderWidth: 1,
     borderRadius: 5,
-    borderColor: '#FFC0CB',
+    borderColor: '#CCC',
     color: "#000",
-    backgroundColor: "#FFC0CB",
+    backgroundColor: "#FFF",
   },
   forgot_button: {
     height: 30,
