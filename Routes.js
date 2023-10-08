@@ -62,8 +62,12 @@ const MyRoutes = () => {
             options={{
               title: 'Login',
               headerTintColor: '#fff',
+              headerTitleStyle:{
+                color:'#fff',
+                fontSize:20,
+              },
               headerStyle: {
-                backgroundColor: '#01403c'
+                backgroundColor: '#01403c',
               },
             }}
             >

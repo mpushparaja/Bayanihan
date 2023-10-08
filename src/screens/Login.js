@@ -75,12 +75,14 @@ const Login = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Loader loading={login.loading} />
-      <Image source={require("../../assets/splashlogo.png")} />
+      <Image source={require("../../assets/splashlogo.png")} 
+       style={styles.logo}
+      />
       <View style={styles.inputView}>
         <TextInput
           style={styles.TextInput}
-          placeholder="Username"
-          placeholderTextColor="#ccc"
+          placeholder="Enter your username"
+          placeholderTextColor="#bbb"
           autoCapitalize="none"
           returnKeyType="next"
           onSubmitEditing={() =>
@@ -97,7 +99,7 @@ const Login = ({navigation}) => {
           style={styles.TextInput}
           placeholder="Password"
           ref={passwordInputRef}
-          placeholderTextColor="#ccc"
+          placeholderTextColor="#bbb"
           onSubmitEditing={Keyboard.dismiss}
           secureTextEntry={login.hidePassword}
           returnKeyType="next"
@@ -120,7 +122,7 @@ const Login = ({navigation}) => {
         onPress={onLogin}
         activeOpacity={0.5}
       >
-        <Text style={GenericStyles.buttonTextStyle}>LOGIN</Text>
+        <Text style={GenericStyles.buttonTextStyle}>Login</Text>
       </TouchableOpacity> 
     </View> 
   );
@@ -141,7 +143,7 @@ const styles = StyleSheet.create({
     right: 3,
     height: 40,
     width: 35,
-    padding: 2
+    padding: 2,
   },
   buttonImage: {
     resizeMode: 'contain',
@@ -150,10 +152,11 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "#ff0000",
+    fontSize:14
   },
   title:{
     fontWeight: "bold",
-    fontSize:50,
+    fontSize:60,
     color:"#fb5b5a",
     marginBottom: 40,
   },
@@ -182,4 +185,10 @@ const styles = StyleSheet.create({
     height: 30,
     marginBottom: 30,
   },
+
+  logo:{
+    position:'absolute',
+    top:80,
+    left:20
+  }
 });
