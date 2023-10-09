@@ -80,12 +80,12 @@ const Login = ({navigation}) => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={GenericStyles.container}>
       <Loader loading={login.loading} />
       <View style={styles.logo}>
         <Image source={require("../../assets/splashlogo.png")} />
       </View>
-      <View style={styles.loginWrapper}>
+      <View>
         <View style={styles.inputView}>
           <TextInput
             style={styles.TextInput}
@@ -142,11 +142,6 @@ const Login = ({navigation}) => {
 export default Login;
 
 const styles = StyleSheet.create({
-  container: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    backgroundColor: "#FFF",
-  },
   touachableButton: {
     position: 'absolute',
     top: 10,
@@ -178,15 +173,6 @@ const styles = StyleSheet.create({
   },
   image: {
     marginBottom: 40,
-  },
-  loginWrapper: {
-    borderWidth: 1,
-    borderRadius: 4,
-    borderColor: '#D2D2D2',
-    paddingTop: 30,
-    paddingBottom: 55,
-    paddingLeft: 15,
-    paddingRight: 15,
   },
   inputView: {
     height: 50,

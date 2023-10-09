@@ -1,6 +1,11 @@
 import {StyleSheet} from 'react-native';
 
 export const GenericStyles = StyleSheet.create({
+    container: {
+        paddingLeft: 20,
+        paddingRight: 20,
+        backgroundColor: "#FFF",
+    },
     btnWrapper: {
         borderRadius: 15,
         height: 50,

@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
+  ScrollView,
 } from "react-native";
 import {Context as context} from '../../Context';
 import Loader from './Loader';
+import {GenericStyles} from '../styles/Styles';
 
 const Verification = ({route, navigation, onVerification}) => {
   const auth = context();
@@ -120,7 +122,7 @@ const Verification = ({route, navigation, onVerification}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={GenericStyles.container}>
       <Loader loading={loading} />
       <Text style={styles.title}>Verification</Text>
       <Text>We sent you a SMS Code on your registered phone number with us.</Text>
@@ -163,17 +165,13 @@ const Verification = ({route, navigation, onVerification}) => {
           <Text style={styles.buttonTextStyle}>Confirm</Text>
         </TouchableOpacity> 
       </View>
-    </View> 
+    </ScrollView> 
   );
 }
 
 export default Verification;
 
 const styles = StyleSheet.create({
-  container: {
-    marginLeft: 35,
-    marginRight: 35,
-  },
   title:{
     fontWeight: "bold",
     fontSize:20,
