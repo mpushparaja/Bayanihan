@@ -6,144 +6,43 @@ import {
   ScrollView,
 } from "react-native";
 import Table from './Table'
+import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
 
-const Accounts = ({navigation}) => {
+const Accounts = () => {
   const auth = context();
-  const [loanData, setLoan] = useState([
-    {
-        date: "01-01-2023",
-        type: "Cash Deposit",
-        amount: "PHP 5000.00"
-    },
-    {
-        date: "01-02-2023",
-        type: "Check Withdrawal",
-        amount: "PHP 1000.00"
-    },
-    {
-        date: "01-05-2023",
-        type: "Online Transfer",
-        amount: "PHP 2500.00"
-    },
-    {
-        date: "01-06-2023",
-        type: "ATM Withdrawal",
-        amount: "PHP 500.00"
-    },
-    {
-        date: "01-07-2023",
-        type: "Cash Deposit",
-        amount: "PHP 10000.00"
-    },
-    {
-        date: "18-09-2023",
-        type: "Check Withdrawal",
-        amount: "PHP 5000.00"
-    },
-    {
-        date: "07-01-2023",
-        type: "ATM Withdrawal",
-        amount: "PHP 98900.00"
-    },
-    {
-        date: "31-07-2023",
-        type: "Online Transfer",
-        amount: "PHP 6000.00"
-    },
-    {
-        date: "17-11-2023",
-        type: "Cash Deposit",
-        amount: "PHP 88000.00"
-    },
-    {
-        date: "12-12-2023",
-        type: "Online Transfer",
-        amount: "PHP 39000.00"
-    },
-    {
-        date: "21-09-2023",
-        type: "ATM Withdrawal",
-        amount: "PHP 4000.00"
-    },
-    {
-        date: "30-01-2023",
-        type: "Check Withdrawal",
-        amount: "PHP 70000.00"
-    }
-  ]) 
-  const [depositData, setDeposit] = useState([
-    {
-        date: "01-01-2023",
-        type: "Cash Deposit",
-        amount: "PHP 5000.00"
-    },
-    {
-        date: "01-02-2023",
-        type: "Check Withdrawal",
-        amount: "PHP 1000.00"
-    },
-    {
-        date: "01-05-2023",
-        type: "Online Transfer",
-        amount: "PHP 2500.00"
-    },
-    {
-        date: "01-06-2023",
-        type: "ATM Withdrawal",
-        amount: "PHP 500.00"
-    },
-    {
-        date: "01-07-2023",
-        type: "Cash Deposit",
-        amount: "PHP 10000.00"
-    },
-    {
-        date: "18-09-2023",
-        type: "Check Withdrawal",
-        amount: "PHP 5000.00"
-    },
-    {
-        date: "07-01-2023",
-        type: "ATM Withdrawal",
-        amount: "PHP 98900.00"
-    },
-    {
-        date: "31-07-2023",
-        type: "Online Transfer",
-        amount: "PHP 6000.00"
-    },
-    {
-        date: "17-11-2023",
-        type: "Cash Deposit",
-        amount: "PHP 88000.00"
-    },
-    {
-        date: "12-12-2023",
-        type: "Online Transfer",
-        amount: "PHP 39000.00"
-    },
-    {
-        date: "21-09-2023",
-        type: "ATM Withdrawal",
-        amount: "PHP 4000.00"
-    },
-    {
-        date: "30-01-2023",
-        type: "Check Withdrawal",
-        amount: "PHP 70000.00"
-    }
-  ])
+  const [accountsData, setAccounts] = useState({'loan': [], 'deposit': []}) 
+  const loanColumns = [
+    {loanNumber: {'text': '', 'style': { fontSize: 16, fontWeight: "bold" }}},
+    {principalBalance: {'text': 'Loan Balance'}, 'style': { fontSize: 16 }},
+    {productName: {'text': ''}, 'style': { fontSize: 16 }}
+  ]
+  const depositColumns = [
+    {'accountNumber': {'text': '', 'style': { fontSize: 16, fontWeight: "bold" }}},
+    {'availableBalance': {'text': 'Available Balance'}, 'style': { fontSize: 16 }},
+    {'productName': {'text': ''}, 'style': { fontSize: 16 }}
+  ]
   useEffect(() => {
-    auth.loanAccounts('kmglj7vbudsosei85es4rckra')
+    auth.listAccounts('loan', '491183')
     .then((data) => {
-      console.log('loan', data)
-      setLoan(data)
+      setAccounts((prevState) => ({
+        ...prevState,
+        'loan': data.loans,
+      }))
+    })
+  }, [])
+  useEffect(() => {
+    auth.listAccounts('deposit', '491183')
+    .then((data) => {
+      setAccounts((prevState) => ({
+        ...prevState,
+        'deposit': data.accounts,
+      }))
     })
   }, [])
   return (
     <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
-      <View style={styles.container}>
+      <View style={GenericStyles.container}>
         <View style={styles.accountProfile}>
           <Text style={styles.accountTitle}>
             Welcome to Bayanihan Bank
@@ -155,13 +54,17 @@ const Accounts = ({navigation}) => {
         <View>
           <>
             <Text style={styles.subTitle}>Loan Accounts</Text>
-            <Table headerView={false} data={loanData} />
+            <View style={styles.wrapper} elevation={2}>
+              <Table headerView={false} data={accountsData.loan} dataKeys={loanColumns} />
+            </View>
           </>
         </View>
         <View>
           <>
             <Text style={styles.subTitle}>Deposit Accounts</Text>
-            <Table headerView={false} data={depositData} />
+            <View style={styles.wrapper} elevation={2}>
+              <Table headerView={false} data={accountsData.deposit} dataKeys={depositColumns} />
+            </View>
           </>
         </View>
       </View> 
@@ -172,28 +75,35 @@ const Accounts = ({navigation}) => {
 export default Accounts;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginLeft: 20,
-    marginRight: 20,
-  },
   scrollView: {
     flexGrow: 1,
   },
   accountProfile: {
     paddingTop: 10,
   },
+  wrapper: {
+    borderRadius:10, 
+    backgroundColor: '#fefefe',
+    borderRadius: 5,
+    borderColor: '#e6e6e6',
+    borderWidth: 1,
+    shadowColor: "#000000",
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 1,
+      width: 1
+    }
+  },
   accountTitle: {
     fontSize: 15,
   },
   subTitle: {
-    fontSize: 16,
-    backgroundColor: "#01403c",
+    fontSize: 18,
+    fontWeight: "bold",
     paddingTop: 8,
-    paddingLeft: 8,
-    paddingBottom: 8,
     marginTop: 20,
     marginBottom: 10,
-    color: "#FFF",
+    color: "#01403C",
   },
 });

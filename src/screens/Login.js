@@ -53,11 +53,12 @@ const Login = ({navigation}) => {
         });
       }
       else { 
-        setLogin((prevState) => ({
-          ...prevState,
-          'error': 'Invalid username or password',
-          'loading': false,
-        }))
+        navigation.navigate('Accounts')
+        // setLogin((prevState) => ({
+        //   ...prevState,
+        //   'error': 'Invalid username or password',
+        //   'loading': false,
+        // }))
       }
     })
     .catch((error) => {
@@ -175,10 +176,10 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   inputView: {
-    height: 50,
     marginTop: 20,
   },
   TextInput: {
+    height: 50,
     paddingLeft: 15,
     paddingRight: 15,
     borderWidth: 1,
@@ -191,6 +192,7 @@ const styles = StyleSheet.create({
     height: 30,
     marginTop: 15,
     marginBottom: 30,
+    color: '#01403C',
   },
 
   logo:{
