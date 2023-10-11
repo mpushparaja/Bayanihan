@@ -25,8 +25,6 @@ export const Provider = ({ children }) => {
       }),
       })
       const responseJson = await response.json();
-      console.log('responseJson',responseJson)
-
       return responseJson
     }
     catch(error) {
@@ -50,8 +48,6 @@ export const Provider = ({ children }) => {
       }),
       })
       const responseJson = await response.json();
-      console.log('mfaponseJson',responseJson)
-
       return responseJson
     }
     catch(error) {
@@ -69,6 +65,26 @@ export const Provider = ({ children }) => {
       },
       body: JSON.stringify({
         id: clientId,
+      }),
+      })
+      const responseJson = await response.json();
+      return responseJson
+    }
+    catch(error) {
+        console.error(error);
+    }
+  }
+
+  const findAccounts = async (type, id) => {
+    try {
+      const response = await fetch(config.API_URL + type +'/account/find', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: id,
       }),
       })
       const responseJson = await response.json();
@@ -100,7 +116,7 @@ export const Provider = ({ children }) => {
   }
 
   return (
-    <MyContext.Provider value={{ state, listAccounts, saveToken, saveMFA, getToken, removeToken }}>
+    <MyContext.Provider value={{ state, listAccounts, findAccounts, saveToken, saveMFA, getToken, removeToken }}>
       {children}
     </MyContext.Provider>
   );

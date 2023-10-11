@@ -40,10 +40,10 @@ const Login = ({navigation}) => {
     }))
     auth.saveToken(login)
     .then((data) => {
-      if (data.status === 'mfa') {
+      if (data && data.status === 'mfa') {
         setLogin((prevState) => ({
           ...prevState,
-          'error': '',
+          'erro`r': '',
           'loading': false,
         }))
         navigation.navigate('Verification', {
@@ -53,16 +53,12 @@ const Login = ({navigation}) => {
         });
       }
       else { 
-        navigation.navigate('Accounts')
-        // setLogin((prevState) => ({
-        //   ...prevState,
-        //   'error': 'Invalid username or password',
-        //   'loading': false,
-        // }))
+        setLogin((prevState) => ({
+          ...prevState,
+          'error': 'Invalid username or password',
+          'loading': false,
+        }))
       }
-    })
-    .catch((error) => {
-      navigation.navigate('Login');
     })
   };
 

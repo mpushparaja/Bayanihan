@@ -9,7 +9,7 @@ import Table from './Table'
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
 
-const Accounts = () => {
+const Accounts = ({navigation}) => {
   const auth = context();
   const [accountsData, setAccounts] = useState({'loan': [], 'deposit': []}) 
   const loanColumns = [
@@ -55,7 +55,7 @@ const Accounts = () => {
           <>
             <Text style={styles.subTitle}>Loan Accounts</Text>
             <View style={styles.wrapper} elevation={2}>
-              <Table headerView={false} data={accountsData.loan} dataKeys={loanColumns} />
+              <Table navigation={navigation} headerView={false} data={accountsData.loan} dataKeys={loanColumns} type='loan' />
             </View>
           </>
         </View>
@@ -63,7 +63,7 @@ const Accounts = () => {
           <>
             <Text style={styles.subTitle}>Deposit Accounts</Text>
             <View style={styles.wrapper} elevation={2}>
-              <Table headerView={false} data={accountsData.deposit} dataKeys={depositColumns} />
+              <Table navigation={navigation} headerView={false} data={accountsData.deposit} dataKeys={depositColumns} type='deposit' />
             </View>
           </>
         </View>

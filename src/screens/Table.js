@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 //import { MaterialCommunityIcons } from '@expo/vector-icons';
 import _ from "lodash"
 
-export default function Table({headerView = null, data=[], dataKeys}) {
+export default function Table({navigation, headerView = null, data=[], dataKeys = [], type = ''}) {
   const [ columns, setColumns ] = useState([
     "Payment Date",
     "Type",
@@ -68,16 +68,21 @@ export default function Table({headerView = null, data=[], dataKeys}) {
     }
     flatListProps = {...flatListProps, ListHeaderComponent: tableHeader, renderItem: renderItem }
   } else {
-    const renderItem = ({item, index})=> {
+    const renderItem = ({item})=> {
       return (
-        <View style={styles.rowWrapper}>
-          {dataKeys.map((key, index) => {
-              const keyItem = Object.keys(key)[0]
-              let keyValue = key[keyItem]
-              const keyText = keyValue.text ? keyValue.text + ": ": ""
-              return <Text key={index} style={keyValue.style}>{keyText}{item[keyItem]}</Text>
-          })}
-        </View>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('AccountView', { viewId: item.id, type: type })}
+          activeOpacity={0.5}
+        >
+          <View style={styles.rowWrapper}>
+            {dataKeys.map((key, index) => {
+                const keyItem = Object.keys(key)[0]
+                let keyValue = key[keyItem]
+                const keyText = keyValue.text ? keyValue.text + ": ": ""
+                return <Text key={index} style={keyValue.style}>{keyText}{item[keyItem]}</Text>
+            })}
+            </View>
+        </TouchableOpacity>
       )
     }
 

@@ -8,6 +8,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from "./src/screens/Login";
 import Accounts from "./src/screens/Accounts";
+import AccountView from "./src/screens/AccountsView";
 import Verification from "./src/screens/Verification";
 import {Context as context} from './Context';
 
@@ -42,6 +43,19 @@ const MyRoutes = () => {
         {isProtectedRoutes ? (
           <>
             <Stack.Screen name="Accounts" component={Accounts} 
+              options={{ 
+                headerTintColor: '#fff',
+                headerStyle: {
+                  backgroundColor: '#01403c'
+                },
+                headerRight: () => (
+                  <TouchableOpacity onPress={showConfirmDialog}>
+                    <Image source={require("./assets/logout.png")} />
+                  </TouchableOpacity>
+                ),
+              }} 
+            />
+            <Stack.Screen name="AccountView" component={AccountView} 
               options={{ 
                 headerTintColor: '#fff',
                 headerStyle: {
