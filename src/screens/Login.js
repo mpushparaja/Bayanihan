@@ -179,6 +179,7 @@ const styles = StyleSheet.create({
   },
   inputView: {
     marginTop: 20,
+    marginBottom:10
   },
   TextInput: {
     height: 50,
