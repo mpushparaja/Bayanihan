@@ -55,7 +55,7 @@ const Accounts = ({navigation}) => {
           <>
             <Text style={styles.subTitle}>Loan Accounts</Text>
             <View style={styles.wrapper} elevation={2}>
-              <Table navigation={navigation} headerView={false} data={accountsData.loan} dataKeys={loanColumns} type='loan' />
+              <Table navigation={navigation} style={styles.tableData} headerView={false} data={accountsData.loan} dataKeys={loanColumns} type='loan' />
             </View>
           </>
         </View>
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   wrapper: {
     borderRadius:10, 
     backgroundColor: '#fefefe',
-    borderRadius: 5,
+    borderRadius: 15,
     borderColor: '#e6e6e6',
     borderWidth: 1,
     shadowColor: "#000000",
@@ -95,15 +95,17 @@ const styles = StyleSheet.create({
       width: 1
     }
   },
+  
   accountTitle: {
     fontSize: 15,
   },
   subTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    paddingTop: 8,
+    padding: 10,
     marginTop: 20,
     marginBottom: 10,
-    color: "#01403C",
+    color: "#fff",
+    backgroundColor: '#01403c'
   },
 });

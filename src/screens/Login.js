@@ -4,12 +4,12 @@ import {
   Text,
   View,
   ScrollView,
-  TextInput,
   Keyboard,
   TouchableOpacity,
   Image,
   Alert,
 } from "react-native";
+import { TextInput } from "react-native-paper";
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
 import Loader from './Loader';
@@ -86,6 +86,8 @@ const Login = ({navigation}) => {
         <View style={styles.inputView}>
           <TextInput
             style={styles.TextInput}
+            mode="outlined"
+            label="Username"
             placeholder="Enter your username"
             placeholderTextColor="#888"
             autoCapitalize="none"
@@ -97,11 +99,14 @@ const Login = ({navigation}) => {
             onChangeText={handleInput('username')}
             underlineColorAndroid="#f000"
             blurOnSubmit={false}
+            theme={ styles.textInputOutlineStyle}
           /> 
         </View> 
         <View style={styles.inputView}>
           <TextInput
             style={styles.TextInput}
+            mode="outlined"
+            label="Password"
             placeholder="Password"
             ref={passwordInputRef}
             placeholderTextColor="#888"
@@ -111,6 +116,7 @@ const Login = ({navigation}) => {
             underlineColorAndroid="#f000"
             blurOnSubmit={false}
             onChangeText={handleInput('password')}
+            theme={ styles.textInputOutlineStyle }
           /> 
           <TouchableOpacity activeOpacity={0.8} style={styles.touachableButton} onPress={setPasswordVisibility}>
             <Image source={(login.hidePassword) ? require('../../assets/eye.png') : require('../../assets/eye-slash.png')} style={styles.buttonImage} />
@@ -141,7 +147,7 @@ export default Login;
 const styles = StyleSheet.create({
   touachableButton: {
     position: 'absolute',
-    top: 10,
+    top: 16,
     right: 3,
     height: 40,
     width: 35,
@@ -178,11 +184,10 @@ const styles = StyleSheet.create({
     height: 50,
     paddingLeft: 15,
     paddingRight: 15,
-    borderWidth: 1,
     borderRadius: 5,
-    borderColor: '#d2d2d2',
     color: "#000",
     backgroundColor: "#FFF",
+    activeOutlineColor:'#01403c'
   },
   forgot_button: {
     height: 30,
@@ -197,5 +202,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop:80,
     marginBottom:70,
+  },
+  textInputOutlineStyle:{ 
+  colors: 
+  { primary: '#01403c',placeholderTextColor:'#01403c' }
   }
 });

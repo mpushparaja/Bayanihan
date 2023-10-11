@@ -139,6 +139,7 @@ const Verification = ({route, navigation, onVerification}) => {
             style={styles.TextInput}
             placeholderTextColor="#003f5c"
             value={otpArray[index]}
+            backgroundColor="#d3d3d3"
             onKeyPress={onOtpKeyPress(index)}
             onChangeText={onOtpChange(index)}
             maxLength={1}
@@ -180,14 +181,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   loginBtn: {
-    width: "40%",
+    width: "45%",
     borderRadius: 5,
     height: 50,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 40,
     marginRight: 35,
-    backgroundColor: "#ffc107",
+    backgroundColor: "#01403c",
   },
   TextInput: {
     flex: 1,
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   buttonTextStyle: {
-    color: "#000",
+    color: "#fff",
     fontSize: 16,
     paddingVertical: 10,
   },

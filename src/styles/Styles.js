@@ -4,7 +4,7 @@ export const GenericStyles = StyleSheet.create({
     container: {
         paddingLeft: 20,
         paddingRight: 20,
-        backgroundColor: "#FFF",
+        backgroundColor: "#f4f4f4",
     },
     btnWrapper: {
         borderRadius: 15,
