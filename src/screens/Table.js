@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity, FlatList, ActivityIndicator }
 //import { MaterialCommunityIcons } from '@expo/vector-icons';
 import _ from "lodash"
 
-export default function Table({navigation, headerView = null, data=[], dataKeys = [], type = ''}) {
+export default function Table({navigation, headerView = null, data=[], dataKeys = [], type = '', loading, viewId, profileHeaderTitle}) {
   const [ columns, setColumns ] = useState([
     "Payment Date",
     "Type",
@@ -71,7 +71,7 @@ export default function Table({navigation, headerView = null, data=[], dataKeys 
     const renderItem = ({item})=> {
       return (
         <TouchableOpacity
-          onPress={() => navigation.navigate('AccountView', { viewId: item.id, type: type })}
+          onPress={() => navigation.navigate('AccountView', { name: profileHeaderTitle, viewId: item[viewId], type: type })}
           activeOpacity={0.5}
         >
           <View style={styles.rowWrapper}>
@@ -91,10 +91,15 @@ export default function Table({navigation, headerView = null, data=[], dataKeys 
 
   return (
     <View style={styles.container}>
-      {rowsData.length ?
-        <FlatList {...flatListProps} />
-      :
-        <ActivityIndicator />
+      {
+        rowsData.length ?
+          <FlatList {...flatListProps} />
+        : 
+          (
+            loading ?
+            <ActivityIndicator animating={loading} />
+            : <Text style={styles.noRecords}>No records</Text>
+          )
       }
     </View>
   );
@@ -103,6 +108,9 @@ export default function Table({navigation, headerView = null, data=[], dataKeys 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+  },
+  noRecords: {
+    padding: 8,
   },
   tableHeader: {
     flexDirection: "row",

@@ -19,8 +19,6 @@ const Login = ({navigation}) => {
   const [login, setLogin] = useState({
     "username": "",
     "password": "",
-    "error": "",
-    "loading": false,
     "hidePassword": true,
   })
   const passwordInputRef = useRef();
@@ -34,26 +32,28 @@ const Login = ({navigation}) => {
       Alert.alert('Please fill Password');
       return;
     }
-    setLogin((prevState) => ({
+    auth.setState((prevState) => ({
       ...prevState,
       'loading': true,
     }))
     auth.saveToken(login)
     .then((data) => {
       if (data && data.status === 'mfa') {
-        setLogin((prevState) => ({
+        auth.setState((prevState) => ({
           ...prevState,
-          'erro`r': '',
+          'error': '',
           'loading': false,
+          'secure' : {
+            hash: data.hash,
+            session: data.session,
+            username: login.username,
+          },
+          'pwd': login.password
         }))
-        navigation.navigate('Verification', {
-          hash: data.hash,
-          session: data.session,
-          username: login.username
-        });
+        navigation.navigate('Verification');
       }
       else { 
-        setLogin((prevState) => ({
+        auth.setState((prevState) => ({
           ...prevState,
           'error': 'Invalid username or password',
           'loading': false,
@@ -78,7 +78,7 @@ const Login = ({navigation}) => {
 
   return (
     <ScrollView style={GenericStyles.container}>
-      <Loader loading={login.loading} />
+      <Loader loading={auth.state.loading} />
       <View style={styles.logo}>
         <Image source={require("../../assets/splashlogo.png")} />
       </View>
@@ -125,9 +125,9 @@ const Login = ({navigation}) => {
         <TouchableOpacity>
           <Text style={styles.forgot_button}>Forgot Password?</Text> 
         </TouchableOpacity> 
-        {login.error &&
+        {auth.state.error &&
           <View style={styles.errorWrapper}>
-            <Text style={styles.error}>{login.error}</Text>
+            <Text style={styles.error}>{auth.state.error}</Text>
           </View>
         }
         <TouchableOpacity

@@ -16,7 +16,7 @@ const Stack = createNativeStackNavigator();
 
 const MyRoutes = () => {
   const auth = context();
-  const [isProtectedRoutes, setProtected] = useState(false)
+  const [isProtectedRoutes, setProtected] = useState(0)
   const onLogout = () => {
     auth.removeToken()
     .then(() => {
@@ -26,9 +26,9 @@ const MyRoutes = () => {
 
   const showConfirmDialog = () => {
     Alert.alert('', 'Are you sure to Logout', [
-      {text: 'Yes', onPress: onLogout},
+      {text: 'Confirm', onPress: onLogout},
       {
-        text: 'No',
+        text: 'Cancel',
       }
     ]);
   }
@@ -56,7 +56,8 @@ const MyRoutes = () => {
               }} 
             />
             <Stack.Screen name="AccountView" component={AccountView} 
-              options={{ 
+              options={({ route }) => ({ 
+                title: route.params.name,
                 headerTintColor: '#fff',
                 headerStyle: {
                   backgroundColor: '#01403c'
@@ -66,7 +67,7 @@ const MyRoutes = () => {
                     <Image source={require("./assets/logout.png")} />
                   </TouchableOpacity>
                 ),
-              }} 
+              })} 
             />
           </>
         ) : (

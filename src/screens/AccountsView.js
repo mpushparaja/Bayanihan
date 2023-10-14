@@ -11,7 +11,10 @@ import {Context as context} from '../../Context';
 
 const Accounts = ({route}) => {
   const auth = context();
-  const [accountsData, setAccounts] = useState({'loan': {dataKey: 'loans', data: {}}, 'deposit' : {dataKey: 'accounts', data: {}}}) 
+  const [accountsData, setAccounts] = useState({
+    'loan': {dataKey: 'loans', data: {}},
+    'deposit': {dataKey: 'accounts', data: {}}
+  }) 
   const columns = { 'loans' : [
     {loanNumber: {'text': 'Loan Number', 'style': { fontSize: 16, fontWeight: "bold" }}},
     {productName: {'text': 'Loan Poduct Name', 'style': { fontSize: 16, fontWeight: "bold" }}},
@@ -33,7 +36,7 @@ const Accounts = ({route}) => {
   ]
 }
   const method = accountsData[route.params.type]
-  const details = method['data']
+  const details = method['data'] ? method['data'] : {} 
   useEffect(() => {
     auth.findAccounts(route.params.type, route.params.viewId)
     .then(data => {

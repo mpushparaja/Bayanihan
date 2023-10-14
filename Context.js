@@ -3,7 +3,7 @@ import React, {createContext, useState, useContext} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from './Config'
 
-const initialState = {loading: false, token: '', error: ''}
+const initialState = {loading: false, token: '', error: '', secured: '', pwd: '', clientId: ''}
 
 const MyContext = createContext(initialState);
 
@@ -95,6 +95,23 @@ export const Provider = ({ children }) => {
     }
   }
 
+  const findClient = async (clientId) => {
+    try {
+      const response = await fetch(config.API_URL + '/client/find/detail?id='+ clientId, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      })
+      const responseJson = await response.json();
+      return responseJson
+    }
+    catch(error) {
+        console.error(error);
+    }
+  }
+
   const getToken = async () => {
     try {
         const resp = await AsyncStorage.getItem('userToken');
@@ -116,7 +133,17 @@ export const Provider = ({ children }) => {
   }
 
   return (
-    <MyContext.Provider value={{ state, listAccounts, findAccounts, saveToken, saveMFA, getToken, removeToken }}>
+    <MyContext.Provider value={{
+      state,
+      setState,
+      findClient,
+      listAccounts,
+      findAccounts,
+      saveToken,
+      saveMFA,
+      getToken,
+      removeToken 
+    }}>
       {children}
     </MyContext.Provider>
   );

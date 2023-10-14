@@ -5,6 +5,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  Keyboard,
   Platform,
   Alert,
   ScrollView,
@@ -13,7 +14,7 @@ import {Context as context} from '../../Context';
 import Loader from './Loader';
 import {GenericStyles} from '../styles/Styles';
 
-const Verification = ({route, navigation, onVerification}) => {
+const Verification = ({navigation, onVerification}) => {
   const auth = context();
   const firstTextInputRef = useRef(null);
   const secondTextInputRef = useRef(null);
@@ -22,26 +23,37 @@ const Verification = ({route, navigation, onVerification}) => {
   const fifthTextInputRef = useRef(null);
   const sixthTextInputRef = useRef(null);
 
-  
   const [otpArray, setOtpArray] = useState(['', '', '', '', '', '']);
-  const [loading, setLoading] = useState(false);
-
-
+  
   const onConfirm = () => {
+    Keyboard.dismiss();
     let params = {};
-    params = {...route.params, code: otpArray.toString().split(",").join("")}
-    setLoading(true)
+    params = {...auth.state.secure, code: otpArray.toString().split(",").join("")}
+    auth.setState((prevState) => ({
+      ...prevState,
+      'loading': true,
+    }))
     auth.saveMFA(params)
     .then((data) => {
-      setLoading(false)
       if (data.code && data.code === 'Successful') {
-        onVerification(true)
+        auth.setState((prevState) => ({
+          ...prevState,
+          'loading': false,
+          'secure': '',
+          'pwd': '',
+          'clientId': data.clientuser.clientId
+        }))
+        onVerification(data.clientuser.clientId)
         navigation.navigate('Accounts');
       } else {
-        // Alert.alert('Error in submitting SMS code, Need to relogin')
-        // navigation.navigate('Login');
-        onVerification(true)
-        navigation.navigate('Accounts');
+        auth.setState((prevState) => ({
+          ...prevState,
+          'loading': false,
+          'secure': '',
+          'pwd': ''
+        }))
+        Alert.alert('Error in submitting SMS code, Need to relogin')
+        navigation.navigate('Login');
       }
     })
     .catch((error) => {
@@ -120,10 +132,10 @@ const Verification = ({route, navigation, onVerification}) => {
     //setResendButtonDisabledTime(RESEND_OTP_TIME_LIMIT);
     //startResendOtpTimer();
   };
-
+  let textProps = {}
   return (
     <ScrollView style={GenericStyles.container}>
-      <Loader loading={loading} />
+      <Loader loading={auth.state.loading} />
       <Text style={styles.title}>Verification</Text>
       <Text>We sent you a SMS Code on your registered phone number with us.</Text>
       <View style={styles.buttonWrapper}>
@@ -134,21 +146,27 @@ const Verification = ({route, navigation, onVerification}) => {
           fourthTextInputRef,
           fifthTextInputRef,
           sixthTextInputRef
-        ].map((textInputRef, index) => (
-          <TextInput
+        ].map((textInputRef, index) => {
+
+          if (index === 5) {
+            textProps = {onSubmitEditing: Keyboard.dismiss}
+          }
+          return <TextInput
             style={styles.TextInput}
             placeholderTextColor="#003f5c"
             value={otpArray[index]}
             backgroundColor="#d3d3d3"
             onKeyPress={onOtpKeyPress(index)}
             onChangeText={onOtpChange(index)}
+            onSubmitEditing={index === 5 ? Keyboard.dismiss : undefined}
+            returnKeyType="next"
             maxLength={1}
             autoFocus={index === 0 ? true : undefined}
             keyboardType="numeric"
             key={index}
             ref={refCallback(textInputRef)}
           /> 
-        ))}
+      })}
       </View>
       <View style={styles.buttonWrapper}>
         <TouchableOpacity

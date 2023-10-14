@@ -11,7 +11,13 @@ import {Context as context} from '../../Context';
 
 const Accounts = ({navigation}) => {
   const auth = context();
-  const [accountsData, setAccounts] = useState({'loan': [], 'deposit': []}) 
+  const [accountsData, setAccounts] = useState({
+    'loan': [],
+    'deposit': [],
+    'loanLoading': false,
+    'depositLoadng': false,
+    'clientDetails': '',
+  }) 
   const loanColumns = [
     {loanNumber: {'text': '', 'style': { fontSize: 16, fontWeight: "bold" }}},
     {principalBalance: {'text': 'Loan Balance'}, 'style': { fontSize: 16 }},
@@ -23,21 +29,57 @@ const Accounts = ({navigation}) => {
     {'productName': {'text': ''}, 'style': { fontSize: 16 }}
   ]
   useEffect(() => {
-    auth.listAccounts('loan', '491183')
+    auth.findClient(auth.state.clientId)
     .then((data) => {
-      setAccounts((prevState) => ({
-        ...prevState,
-        'loan': data.loans,
-      }))
+      if (data.status === 'success') {
+        console.log('success', data)
+        setAccounts((prevState) => ({
+          ...prevState,
+          'clientDetails': data.client,
+        }))
+      }
     })
   }, [])
   useEffect(() => {
-    auth.listAccounts('deposit', '491183')
+    setAccounts((prevState) => ({
+      ...prevState,
+      'loanLoading': true,
+    }))
+    auth.listAccounts('loan', auth.state.clientId)
     .then((data) => {
-      setAccounts((prevState) => ({
-        ...prevState,
-        'deposit': data.accounts,
-      }))
+      if (data.loans.length) {
+        setAccounts((prevState) => ({
+          ...prevState,
+          'loan': data.loans,
+          'loanLoading': false,
+        }))
+      } else {
+        setAccounts((prevState) => ({
+          ...prevState,
+          'loanLoading': false,
+        }))
+      }
+    })
+  }, [])
+  useEffect(() => {
+    setAccounts((prevState) => ({
+      ...prevState,
+      'depositLoading': true,
+    }))
+    auth.listAccounts('deposit', auth.state.clientId)
+    .then((data) => {
+      if (data.accounts.length) {
+        setAccounts((prevState) => ({
+          ...prevState,
+          'deposit': data.accounts,
+          'depositLoading': false,
+        }))
+      } else {
+        setAccounts((prevState) => ({
+          ...prevState,
+          'depositLoading': false,
+        }))
+      }
     })
   }, [])
   return (
@@ -48,14 +90,14 @@ const Accounts = ({navigation}) => {
             Welcome to Bayanihan Bank
           </Text>
           <Text style={{fontSize: 12,}}>
-            Account: Bayani Agbayani
+            Account: {accountsData.clientDetails ? accountsData.clientDetails.name: ''}
           </Text>
         </View>
         <View>
           <>
             <Text style={styles.subTitle}>Loan Accounts</Text>
             <View style={styles.wrapper} elevation={2}>
-              <Table navigation={navigation} style={styles.tableData} headerView={false} data={accountsData.loan} dataKeys={loanColumns} type='loan' />
+              <Table navigation={navigation} style={styles.tableData} loading={accountsData.loanLoading} headerView={false} data={accountsData.loan} dataKeys={loanColumns} type='loan' viewId={'Id'} profileHeaderTitle={'Loan Details'} />
             </View>
           </>
         </View>
@@ -63,7 +105,7 @@ const Accounts = ({navigation}) => {
           <>
             <Text style={styles.subTitle}>Deposit Accounts</Text>
             <View style={styles.wrapper} elevation={2}>
-              <Table navigation={navigation} headerView={false} data={accountsData.deposit} dataKeys={depositColumns} type='deposit' />
+              <Table navigation={navigation} headerView={false} loading={accountsData.depositLoading} data={accountsData.deposit} dataKeys={depositColumns} type='deposit' viewId={'accountId'} profileHeaderTitle={'Deposit Details'} />
             </View>
           </>
         </View>
@@ -82,14 +124,13 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   wrapper: {
-    borderRadius:10, 
+    borderRadius:4, 
     backgroundColor: '#fefefe',
-    borderRadius: 15,
     borderColor: '#e6e6e6',
     borderWidth: 1,
     shadowColor: "#000000",
     shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowRadius: 1,
     shadowOffset: {
       height: 1,
       width: 1
@@ -97,7 +138,8 @@ const styles = StyleSheet.create({
   },
   
   accountTitle: {
-    fontSize: 15,
+    fontSize: 16,
+    fontWeight: "bold",
   },
   subTitle: {
     fontSize: 18,
