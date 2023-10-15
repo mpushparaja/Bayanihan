@@ -1,14 +1,14 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useEffect} from "react";
 import {
   StyleSheet,
   Text,
   TextInput,
   View,
   TouchableOpacity,
-  Keyboard,
   Platform,
   Alert,
   ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 import {Context as context} from '../../Context';
 import Loader from './Loader';
@@ -16,19 +16,15 @@ import {GenericStyles} from '../styles/Styles';
 
 const Verification = ({navigation, onVerification}) => {
   const auth = context();
-  const firstTextInputRef = useRef(null);
-  const secondTextInputRef = useRef(null);
-  const thirdTextInputRef = useRef(null);
-  const fourthTextInputRef = useRef(null);
-  const fifthTextInputRef = useRef(null);
-  const sixthTextInputRef = useRef(null);
 
-  const [otpArray, setOtpArray] = useState(['', '', '', '', '', '']);
-  
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  // in secs, if value is greater than 0 then button will be disabled
+  const [resendButtonDisabledTime, setResendButtonDisabledTime] = useState(0);
+  const inputs = [];
+  let resendOtpTimerInterval;
   const onConfirm = () => {
-    Keyboard.dismiss();
     let params = {};
-    params = {...auth.state.secure, code: otpArray.toString().split(",").join("")}
+    params = {...auth.state.secure, code: otp.toString().split(",").join("")}
     auth.setState((prevState) => ({
       ...prevState,
       'loading': true,
@@ -56,52 +52,70 @@ const Verification = ({navigation, onVerification}) => {
         navigation.navigate('Login');
       }
     })
-    .catch((error) => {
-      navigation.navigate('Login');
+  }
+
+  const callResendOtp = () => {
+    auth.setState((prevState) => ({
+      ...prevState,
+      'loading': true,
+    }))
+    auth.saveToken({username: auth.state.secure.username, password: auth.state.pwd})
+    .then((data) => {
+      if (data && data.status === 'mfa') {
+        auth.setState((prevState) => ({
+          ...prevState,
+          'error': '',
+          'success': 'A new OTP has been sent to your mobile number',
+          'loading': false,
+          'secure' : {
+            hash: data.hash,
+            session: data.session,
+            username: auth.state.secure.username,
+          },
+        }))
+      }
     })
   }
 
-  const onOtpChange = index => {
-    return value => {
-      if (isNaN(Number(value))) {
-        // do nothing when a non digit is pressed
-        return;
-      }
-      const otpArrayCopy = otpArray.concat();
-      otpArrayCopy[index] = value;
-      setOtpArray(otpArrayCopy);
+  useEffect(() => {
+    startResendOtpTimer();
 
-      // auto focus to next InputText if value is not blank
-      if (value !== '') {
-        if (index === 0) {
-          secondTextInputRef.current.focus();
-        } else if (index === 1) {
-          thirdTextInputRef.current.focus();
-        } else if (index === 2) {
-          fourthTextInputRef.current.focus();
-        } else if (index === 3) {
-          fifthTextInputRef.current.focus();
-        } else if (index === 4) {
-          sixthTextInputRef.current.focus();
-        }
+    return () => {
+      if (resendOtpTimerInterval) {
+        clearInterval(resendOtpTimerInterval);
       }
     };
+  }, [resendButtonDisabledTime]);
+
+  const startResendOtpTimer = () => {
+    if (resendOtpTimerInterval) {
+      clearInterval(resendOtpTimerInterval);
+    }
+    resendOtpTimerInterval = setInterval(() => {
+      if (resendButtonDisabledTime <= 0) {
+        clearInterval(resendOtpTimerInterval);
+      } else {
+        setResendButtonDisabledTime(resendButtonDisabledTime - 1);
+      }
+    }, 1000);
   };
 
-  const onOtpKeyPress = index => {
+  const onOtpChange = (value, index) => {
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    // Move focus to the next box if the current one has a value
+    if (value && index < newOtp.length - 1) {
+      inputs[index + 1].focus();
+    }
+  };
+
+  const onOtpKeyPress = (index) => {
     return ({nativeEvent: {key: value}}) => {
       // auto focus to previous InputText if value is blank and existing value is also blank
-      if (value === 'Backspace' && otpArray[index] === '') {
-        if (index === 1) {
-          firstTextInputRef.current.focus();
-        } else if (index === 2) {
-          secondTextInputRef.current.focus();
-        } else if (index === 3) {
-          thirdTextInputRef.current.focus();
-        } else if (index === 4) {
-          fourthTextInputRef.current.focus();
-        } else if (index === 5) {
-          fifthTextInputRef.current.focus();
+      if (value === 'Backspace' && otp[index] === '') {
+        if (index >= 1) {
+          inputs[index-1].focus();
         }
 
         /**
@@ -110,81 +124,98 @@ const Verification = ({navigation, onVerification}) => {
          * todo check this behaviour on ios
          */
         if (Platform.OS === 'android' && index > 0) {
-          const otpArrayCopy = otpArray.concat();
-          otpArrayCopy[index - 1] = ''; // clear the previous box which will be in focus
-          setOtpArray(otpArrayCopy);
+          const otpCopy = otp.concat();
+          otpCopy[index - 1] = ''; // clear the previous box which will be in focus
+          setOtp(otpCopy);
         }
       }
     };
   };
 
-  const refCallback = textInputRef => node => {
-    textInputRef.current = node;
-  };
-
-
   const onResendOtpButtonPress = () => {
-    if (firstTextInputRef) {
-      setOtpArray(['', '', '', '']);
-      firstTextInputRef.current.focus();
+    if (inputs[0]) {
+      setOtp(['', '', '', '', '', '']);
+      inputs[0].focus()
     }
-
-    //setResendButtonDisabledTime(RESEND_OTP_TIME_LIMIT);
-    //startResendOtpTimer();
+    if (auth.state.success) {
+      auth.setState((prevState) => ({
+        ...prevState,
+        'success': '',
+      }))
+      setResendButtonDisabledTime(30);
+    } else {
+      callResendOtp();
+    }
   };
-  let textProps = {}
-  return (
-    <ScrollView style={GenericStyles.container}>
-      <Loader loading={auth.state.loading} />
-      <Text style={styles.title}>Verification</Text>
-      <Text>We sent you a SMS Code on your registered phone number with us.</Text>
-      <View style={styles.buttonWrapper}>
-        {[
-          firstTextInputRef,
-          secondTextInputRef,
-          thirdTextInputRef,
-          fourthTextInputRef,
-          fifthTextInputRef,
-          sixthTextInputRef
-        ].map((textInputRef, index) => {
 
-          if (index === 5) {
-            textProps = {onSubmitEditing: Keyboard.dismiss}
-          }
-          return <TextInput
-            style={styles.TextInput}
-            placeholderTextColor="#003f5c"
-            value={otpArray[index]}
-            backgroundColor="#d3d3d3"
-            onKeyPress={onOtpKeyPress(index)}
-            onChangeText={onOtpChange(index)}
-            onSubmitEditing={index === 5 ? Keyboard.dismiss : undefined}
-            returnKeyType="next"
-            maxLength={1}
-            autoFocus={index === 0 ? true : undefined}
-            keyboardType="numeric"
-            key={index}
-            ref={refCallback(textInputRef)}
-          /> 
-      })}
-      </View>
-      <View style={styles.buttonWrapper}>
-        <TouchableOpacity
-          style={styles.loginBtn}
-          onPress={onResendOtpButtonPress}
-          activeOpacity={0.5}
-        >
-          <Text style={styles.buttonTextStyle}>Resend</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.loginBtn}
-          onPress={onConfirm}
-          activeOpacity={0.5}
-        >
-          <Text style={styles.buttonTextStyle}>Confirm</Text>
-        </TouchableOpacity> 
-      </View>
-    </ScrollView> 
+  const disabledStyle = {
+    opacity: 0.5,
+  }
+  
+  // Keyboard automatically shown after open the screen
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      setTimeout(() => {
+        if(inputs[0]) {
+          inputs[0].focus()
+        }
+      }, 60)
+    }
+  }, [])
+  return (
+    <ScrollView keyboardShouldPersistTaps={'handled'} style={GenericStyles.container}>
+      <KeyboardAvoidingView behavior="padding">
+        <Loader loading={auth.state.loading} />
+        <Text style={styles.title}>Verification</Text>
+        <Text>We sent you a SMS Code on your registered phone number with us.</Text>
+        <View style={styles.buttonWrapper}>
+          {otp.map((digit, index) => (
+            <TextInput
+              style={styles.TextInput}
+              placeholderTextColor="#003f5c"
+              value={digit}
+              backgroundColor="#d3d3d3"
+              onKeyPress={onOtpKeyPress(index)}
+              onChangeText={(value) => onOtpChange(value, index)}
+              maxLength={1}
+              autoFocus={Platform.OS === 'ios' && index === 0 ? true : undefined}
+              keyboardType="numeric"
+              key={index}
+              ref={(input) => {
+                inputs[index] = input;
+              }}
+            /> 
+          ))}
+        </View>
+        {auth.state.success && resendButtonDisabledTime <=0 &&
+          <View style={styles.errorWrapper}>
+            <Text style={styles.success}>{auth.state.success}</Text>
+          </View>
+        }
+        {resendButtonDisabledTime > 0 && 
+          <View style={styles.errorWrapper}>
+            <Text style={styles.timeDisplay}>Please wait {resendButtonDisabledTime} second(s) before requesting a new One Time Password (OTP).</Text>
+          </View>
+        }
+        <View style={styles.buttonWrapper}>
+          <TouchableOpacity
+            style={[styles.loginBtn, resendButtonDisabledTime > 0 && disabledStyle]}
+            onPress={onResendOtpButtonPress}
+            activeOpacity={0.5}
+            disabled={resendButtonDisabledTime > 0 ? true : false}
+          >
+            <Text style={styles.buttonTextStyle}>Resend</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.loginBtn}
+            onPress={onConfirm}
+            activeOpacity={0.5}
+          >
+            <Text style={styles.buttonTextStyle}>Confirm</Text>
+          </TouchableOpacity> 
+        </View>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
 
@@ -207,6 +238,17 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginRight: 35,
     backgroundColor: "#01403c",
+    opacity: 1,
+  },
+  success: {
+    color: "#067D62",
+    fontSize:14,
+    marginTop: 20,
+  },
+  timeDisplay: {
+    color: '#000000',
+    fontSize:14,
+    marginTop: 20,
   },
   TextInput: {
     flex: 1,

@@ -97,7 +97,7 @@ const Accounts = ({navigation}) => {
           <>
             <Text style={styles.subTitle}>Loan Accounts</Text>
             <View style={styles.wrapper} elevation={2}>
-              <Table navigation={navigation} style={styles.tableData} loading={accountsData.loanLoading} headerView={false} data={accountsData.loan} dataKeys={loanColumns} type='loan' viewId={'Id'} profileHeaderTitle={'Loan Details'} />
+              <Table navigation={navigation} style={styles.tableData} loading={accountsData.loanLoading} headerView={false} data={accountsData.loan} dataKeys={loanColumns} type='loan' type1='payments' viewId={'Id'} profileHeaderTitle={'Loan Details'} />
             </View>
           </>
         </View>
@@ -105,7 +105,7 @@ const Accounts = ({navigation}) => {
           <>
             <Text style={styles.subTitle}>Deposit Accounts</Text>
             <View style={styles.wrapper} elevation={2}>
-              <Table navigation={navigation} headerView={false} loading={accountsData.depositLoading} data={accountsData.deposit} dataKeys={depositColumns} type='deposit' viewId={'accountId'} profileHeaderTitle={'Deposit Details'} />
+              <Table navigation={navigation} headerView={false} loading={accountsData.depositLoading} data={accountsData.deposit} dataKeys={depositColumns} type='deposit' type1='transactions' viewId={'accountId'} profileHeaderTitle={'Deposit Details'} />
             </View>
           </>
         </View>

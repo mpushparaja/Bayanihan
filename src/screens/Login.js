@@ -42,6 +42,7 @@ const Login = ({navigation}) => {
         auth.setState((prevState) => ({
           ...prevState,
           'error': '',
+          'success': '',
           'loading': false,
           'secure' : {
             hash: data.hash,
@@ -56,6 +57,7 @@ const Login = ({navigation}) => {
         auth.setState((prevState) => ({
           ...prevState,
           'error': 'Invalid username or password',
+          'success': '',
           'loading': false,
         }))
       }
