@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {
   StyleSheet,
   Text,
+  TextInput,
   View,
   ScrollView,
   ActivityIndicator,
@@ -51,22 +52,33 @@ useEffect(() => {
 
 
 const [transData, setTrans] = useState({
-  'loan': {dataKey: 'payments', data: {}},
-  'deposit': {dataKey: 'transactions', data: {}},
+  'loan': {dataKey: 'payments', data: [], search: []},
+  'deposit': {dataKey: 'transactions', data: [], search: []},
   loading: false,
 }) 
+const [ query, setQuery ] = useState('')
+
 const columns1 = { 'payments' : [
-  {postedDate: {'text': 'Payment Date', 'style': { fontSize: 16, fontWeight: "bold" }}},
+  {postedDate: {'text': 'Payment Date', 'style': { fontSize: 16, fontWeight: "bold" }, formatter: (data) => {
+    const date = new Date(data);
+    const month = date.toLocaleString('default', { month: 'short' });
+    return date.getDate() + ' ' + month
+  }}},
   {amount: {'text': 'Amount', 'style': { fontSize: 16, fontWeight: "bold" }}}
   ],
   'transactions': [
-    {postedDate: {'text': 'Payment Date', 'style': { fontSize: 16 }}},
+    {postedDate: {'text': 'Payment Date', 'style': { fontSize: 16 }, formatter: (data) => {
+      const date = new Date(data);
+      const month = date.toLocaleString('default', { month: 'short' });
+      return date.getDate() + ' ' + month
+    }}},
     {transactionType: {'text': 'Type', 'style': { fontSize: 16, fontWeight: "bold" }}},
     {amount: {'text': 'Amount', 'style': { fontSize: 16, fontWeight: "bold" }}}
   ]
 }
 const method2 = transData[route.params.type]
-const details2 = method2['data'] ? method2['data'] : {} 
+const details2 = method2['data'] ? method2['data'] : [] 
+const search = method2['search'] ? method2['search'] : [] 
 
 useEffect(() => {
   setTrans((prevState) => ({
@@ -78,11 +90,30 @@ useEffect(() => {
     setTrans(prevState => {
       return {
         ...prevState, 
-        [route.params.type]: {...method2 ,'data': data[route.params.type1]},
+        [route.params.type]: {...method2 ,'data': data[route.params.type1], 'search': data[route.params.type1]},
         loading: false
       }
     })
 })}, [])
+
+const handleSearch = text => {
+  const formattedQuery = text;
+  let filteredData = details2.filter((item) => {
+    return item.postedDate.includes(formattedQuery)
+  })
+
+  if (text === '' ) {
+    filteredData = details2
+  }
+  setTrans(prevState => {
+    return {
+      ...prevState, 
+      [route.params.type]: {...method2 , 'search': filteredData},
+      loading: false
+    }
+  })
+  setQuery(text);
+};
 return (
   <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
     <View style={GenericStyles.container}>
@@ -94,7 +125,20 @@ return (
           })}
         </View> : <ActivityIndicator />}
       </View> 
-        <Table headerView={true} loading={transData.loading} data={details2} dataKeys={columns1[method2['dataKey']]} />
+      <View style={styles.searchWrapper} elevation={2}>
+      <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          clearButtonMode="always"
+          value={query}
+          onChangeText={queryText => handleSearch(queryText)}
+          placeholder="Search"
+          style={{ backgroundColor: 'transparent', paddingHorizontal: 20 }}
+        />
+        </View>
+        <View style={styles.wrapper} elevation={2}>
+          <Table headerView={true} loading={transData.loading} data={search} dataKeys={columns1[method2['dataKey']]} />
+        </View>
     </View>
   </ScrollView>);
 }
@@ -105,8 +149,21 @@ const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,
   },
+  searchWrapper: {
+    marginTop: 10,
+    borderRadius:4, 
+    borderColor: '#fff',
+    borderWidth: 1,
+    shadowColor: "#000000",
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    shadowOffset: {
+      height: 1,
+      width: 1
+    }
+  },
   wrapper: {
-    marginTop: 30,
+    marginTop: 10,
     padding: 10,
     borderRadius:10, 
     backgroundColor: '#fefefe',

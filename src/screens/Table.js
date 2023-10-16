@@ -1,43 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import _ from "lodash"
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 
 export default function Table({navigation = null, headerView = null, data=[], dataKeys = [], type = '',  type1 = '', loading, viewId = null, profileHeaderTitle = null}) {
-  const [ query, setQuery ] = useState('')
   const [ rowsData, setRowData ] = useState(data)
 
   useEffect(() => (
     setRowData(data)
   ), [data])
 
-
-  const handleSearch = text => {
-    const formattedQuery = text;
-    let filteredData = data.filter((item) => {
-      return item.postedDate.includes(formattedQuery)
-    })
-
-    if (text === '' ) {
-      filteredData = data
-    }
-    setRowData(filteredData)
-    setQuery(text);
-  };
-
   const tableHeader = () => (
     <>
-      <View style={styles.searchWrapper}>
-        <TextInput
-        autoCapitalize="none"
-        autoCorrect={false}
-        clearButtonMode="always"
-        value={query}
-        onChangeText={queryText => handleSearch(queryText)}
-        placeholder="Search"
-        style={{ backgroundColor: 'transparent', paddingHorizontal: 20 }}
-      />
-      </View>
       <View style={styles.tableHeader}>
         {
           dataKeys.map((key, index) => {
@@ -71,7 +44,10 @@ export default function Table({navigation = null, headerView = null, data=[], da
         <View style={{...styles.tableRow}}>
           {dataKeys.map((key, index) => {
             const keyItem = Object.keys(key)[0]
-            return <Text key={index} style={styles.columnRowTxt}>{item[keyItem]}</Text>
+            let keyValue = key[keyItem]
+            return <Text key={index} style={styles.columnRowTxt}>
+              {keyValue.formatter ? keyValue.formatter(item[keyItem]): item[keyItem]}
+            </Text>
           })}
         </View>
       )
@@ -95,13 +71,11 @@ export default function Table({navigation = null, headerView = null, data=[], da
         </TouchableOpacity>
       )
     }
-
     flatListProps = {...flatListProps, renderItem: renderItem }
   }
-
   return (
     <View style={styles.container}>
-      {
+       {
         rowsData.length ?
           <FlatList {...flatListProps} />
         : 
@@ -129,20 +103,6 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 10,
     borderTopStartRadius: 10,
     height: 50
-  },
-  searchWrapper: {
-    marginTop: 15,
-    borderRadius:4, 
-    backgroundColor:'#ccc',
-    borderColor: '#e6e6e6',
-    borderWidth: 1,
-    shadowColor: "#000000",
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    shadowOffset: {
-      height: 1,
-      width: 1
-    }
   },
   tableRow: {
     flexDirection: "row",

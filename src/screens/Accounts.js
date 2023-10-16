@@ -32,7 +32,6 @@ const Accounts = ({navigation}) => {
     auth.findClient(auth.state.clientId)
     .then((data) => {
       if (data.status === 'success') {
-        console.log('success', data)
         setAccounts((prevState) => ({
           ...prevState,
           'clientDetails': data.client,
