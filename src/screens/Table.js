@@ -102,7 +102,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderTopEndRadius: 10,
     borderTopStartRadius: 10,
-    height: 50
+    height: 50,
+    backgroundColor: '#d2d2d2'
   },
   tableRow: {
     flexDirection: "row",

@@ -50,7 +50,7 @@ const MyRoutes = () => {
                 },
                 headerRight: () => (
                   <TouchableOpacity onPress={showConfirmDialog}>
-                    <Image source={require("./assets/logout.png")} />
+                    <Image source={require("./assets/logout-1.png")} />
                   </TouchableOpacity>
                 ),
               }} 
@@ -64,7 +64,7 @@ const MyRoutes = () => {
                 },
                 headerRight: () => (
                   <TouchableOpacity onPress={showConfirmDialog}>
-                    <Image source={require("./assets/logout.png")} />
+                    <Image source={require("./assets/logout-1.png")} />
                   </TouchableOpacity>
                 ),
               })} 
