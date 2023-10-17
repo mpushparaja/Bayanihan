@@ -6,7 +6,9 @@ import {
   View,
   ScrollView,
   ActivityIndicator,
-} from 'react-native';
+  Keyboard,
+  SafeAreaView,
+} from "react-native";
 import Table from './Table';
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
@@ -114,17 +116,20 @@ const Accounts = ({route}) => {
   });
   const [query, setQuery] = useState('');
 
+  const dateFormatter = data => {
+    const date = new Date(data);
+    const month = date.toLocaleString('default', {month: 'short'});
+    const year = date.toLocaleString('default', {year: 'numeric'});
+    return date.getDate() + ' ' + month + ' '+year;
+  }
+
   const columns1 = {
     payments: [
       {
         postedDate: {
           text: 'Payment Date',
           style: {fontSize: 16, fontWeight: 'bold'},
-          formatter: data => {
-            const date = new Date(data);
-            const month = date.toLocaleString('default', {month: 'short'});
-            return date.getDate() + ' ' + month;
-          },
+          formatter: dateFormatter,
         },
       },
       {amount: {text: 'Amount', style: {fontSize: 16, fontWeight: 'bold'}}},
@@ -134,11 +139,7 @@ const Accounts = ({route}) => {
         postedDate: {
           text: 'Payment Date',
           style: {fontSize: 16},
-          formatter: data => {
-            const date = new Date(data);
-            const month = date.toLocaleString('default', {month: 'short'});
-            return date.getDate() + ' ' + month;
-          },
+          formatter: dateFormatter,
         },
       },
       {
@@ -195,58 +196,65 @@ const Accounts = ({route}) => {
     setQuery(text);
   };
 
-  handleFocus = () => {
-    setFocus(true);
-  };
-
-  handleBlur = () => {
-    setFocus(false);
-  };
+  useEffect(() => {
+    const showSubscription  = Keyboard.addListener('keyboardDidShow', () => {
+      setFocus(true)
+    });
+  
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setFocus(false)
+    });
+  
+    return () => {
+      hideSubscription.remove();
+      showSubscription.remove();
+    }
+  }, []);
 
   return (
-    <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
-      <View style={GenericStyles.container}>
-        <View style={{display: isFocus ? 'none' : 'block'}}>
-          {Object.keys(details) ? (
-            <View style={styles.wrapper}>
-              {columns[method['dataKey']].map((item, index) => {
-                const keyItem = Object.keys(item)[0];
-                return (
-                  <Text
-                    key={index}
-                    style={{paddingBottom: 8, paddingLeft: 10, fontSize: 16}}>
-                    {item[keyItem].text}: {details[keyItem]}
-                  </Text>
-                );
-              })}
-            </View>
-          ) : (
-            <ActivityIndicator />
-          )}
+    <SafeAreaView>
+      <ScrollView keyboardShouldPersistTaps={'handled'} contentInsetAdjustmentBehavior={'automatic'} style={styles.scrollView}>
+        <View style={GenericStyles.container}>
+          <View style={{display: isFocus ? 'none' : 'block'}}>
+            {Object.keys(details) ? (
+              <View style={styles.wrapper}>
+                {columns[method['dataKey']].map((item, index) => {
+                  const keyItem = Object.keys(item)[0];
+                  return (
+                    <Text
+                      key={index}
+                      style={{paddingBottom: 8, paddingLeft: 10, fontSize: 16}}>
+                      {item[keyItem].text}: {details[keyItem]}
+                    </Text>
+                  );
+                })}
+              </View>
+            ) : (
+              <ActivityIndicator />
+            )}
+          </View>
+          <View style={styles.searchWrapper} elevation={2}>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              clearButtonMode="always"
+              value={query}
+              onChangeText={queryText => handleSearch(queryText)}
+              placeholder="Search by payment date (mm-dd-yyyy)"
+              style={styles.searchTextInput}
+            />
+          </View>
+          <View style={styles.wrapper} elevation={2}>
+            <Table
+              headerView={true}
+              loading={transData.loading}
+              data={search}
+              dataKeys={columns1[method2['dataKey']]}
+            />
+          </View>
         </View>
-        <View style={styles.searchWrapper} elevation={2}>
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            clearButtonMode="always"
-            value={query}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            onChangeText={queryText => handleSearch(queryText)}
-            placeholder="Search by payment date (mm-dd-yyyy)"
-            style={styles.searchTextInput}
-          />
-        </View>
-        <View style={styles.wrapper} elevation={2}>
-          <Table
-            headerView={true}
-            loading={transData.loading}
-            data={search}
-            dataKeys={columns1[method2['dataKey']]}
-          />
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -284,7 +292,6 @@ const styles = StyleSheet.create({
     },
   },
   searchTextInput: {
-    // backgroundColor: 'transparent',
     borderColor: '#d2d2d2',
     borderWidth: 1,
     paddingHorizontal: 20,
