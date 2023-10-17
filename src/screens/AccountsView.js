@@ -181,7 +181,8 @@ const Accounts = ({route}) => {
   const handleSearch = text => {
     const formattedQuery = text;
     let filteredData = details2.filter(item => {
-      return item.postedDate.includes(formattedQuery);
+      const date = new Date(item.postedDate).toLocaleString('default', {day:'numeric', month: 'short', year: 'numeric'})
+      return date.includes(formattedQuery);
     });
 
     if (text === '') {
@@ -236,7 +237,7 @@ const Accounts = ({route}) => {
               <ActivityIndicator />
             )}
           </View>
-          <View style={styles.searchWrapper} elevation={2}>
+          <View style={styles.searchWrapper}>
             <Image source={require("../../assets/search.png")} style={styles.searchIcon} />
             <TextInput
               autoCapitalize="none"
@@ -302,13 +303,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 10,
     borderRadius: 4,
-    shadowColor: '#dedede',
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    shadowOffset: {
-      height: 1,
-      width: 1,
-    },
   },
   searchTextInput: {
     flex: 1,
