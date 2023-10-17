@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Keyboard,
   SafeAreaView,
+  Image,
 } from "react-native";
 import Table from './Table';
 import {GenericStyles} from '../styles/Styles';
@@ -224,7 +225,9 @@ const Accounts = ({route}) => {
                     <Text
                       key={index}
                       style={{padding:2, fontSize: 14}}>
-                      {item[keyItem].text}: {details[keyItem]}
+                      <Text style={{fontWeight: 'bold'}}>
+                        {item[keyItem].text}:
+                      </Text> {details[keyItem]}
                     </Text>
                   );
                 })}
@@ -234,6 +237,7 @@ const Accounts = ({route}) => {
             )}
           </View>
           <View style={styles.searchWrapper} elevation={2}>
+            <Image source={require("../../assets/search.png")} style={styles.searchIcon} />
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
@@ -264,17 +268,6 @@ const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,
   },
-  searchWrapper: {
-    marginTop: 10,
-    borderRadius: 4,
-    shadowColor: '#dedede',
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    shadowOffset: {
-      height: 1,
-      width: 1,
-    },
-  },
   viewWrapper: {
     marginTop: 10,
     padding: 4,
@@ -304,11 +297,31 @@ const styles = StyleSheet.create({
       width: 1,
     },
   },
+  searchWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    marginTop: 10,
+    borderRadius: 4,
+    shadowColor: '#dedede',
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    shadowOffset: {
+      height: 1,
+      width: 1,
+    },
+  },
   searchTextInput: {
+    flex: 1,
+    paddingLeft: 35,
     borderWidth: 1,
     borderColor: '#bbb',
     paddingHorizontal: 20,
     borderRadius: 10,
     height: 50,
+  },
+  searchIcon: {
+    position: 'absolute',
+    top: 12,
+    left: 5
   },
 });
