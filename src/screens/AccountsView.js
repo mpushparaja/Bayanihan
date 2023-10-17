@@ -9,7 +9,7 @@ import {
   Keyboard,
   SafeAreaView,
   Image,
-} from "react-native";
+} from 'react-native';
 import Table from './Table';
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
@@ -102,10 +102,17 @@ const Accounts = ({route}) => {
   useEffect(() => {
     auth.findAccounts(route.params.type, route.params.viewId).then(data => {
       setAccounts(prevState => {
-        return {
-          ...prevState,
-          [route.params.type]: {...method, data: data[method['dataKey']]},
-        };
+        if (method.dataKey === 'loans') {
+          return {
+            ...prevState,
+            [route.params.type]: {...method, data: data['loan']},
+          };
+        } else {
+          return {
+            ...prevState,
+            [route.params.type]: {...method, data: data[method['dataKey']]},
+          };
+        }
       });
     });
   }, []);
@@ -121,8 +128,8 @@ const Accounts = ({route}) => {
     const date = new Date(data);
     const month = date.toLocaleString('default', {month: 'short'});
     const year = date.toLocaleString('default', {year: 'numeric'});
-    return date.getDate() + ' ' + month + ' '+year;
-  }
+    return date.getDate() + ' ' + month + ' ' + year;
+  };
 
   const columns1 = {
     payments: [
@@ -181,7 +188,11 @@ const Accounts = ({route}) => {
   const handleSearch = text => {
     const formattedQuery = text;
     let filteredData = details2.filter(item => {
-      const date = new Date(item.postedDate).toLocaleString('default', {day:'numeric', month: 'short', year: 'numeric'})
+      const date = new Date(item.postedDate).toLocaleString('default', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
       return date.includes(formattedQuery);
     });
 
@@ -199,23 +210,26 @@ const Accounts = ({route}) => {
   };
 
   useEffect(() => {
-    const showSubscription  = Keyboard.addListener('keyboardDidShow', () => {
-      setFocus(true)
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setFocus(true);
     });
-  
+
     const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      setFocus(false)
+      setFocus(false);
     });
-  
+
     return () => {
       hideSubscription.remove();
       showSubscription.remove();
-    }
+    };
   }, []);
 
   return (
     <SafeAreaView>
-      <ScrollView keyboardShouldPersistTaps={'handled'} contentInsetAdjustmentBehavior={'automatic'} style={styles.scrollView}>
+      <ScrollView
+        keyboardShouldPersistTaps={'handled'}
+        contentInsetAdjustmentBehavior={'automatic'}
+        style={styles.scrollView}>
         <View style={GenericStyles.container}>
           <View style={{display: isFocus ? 'none' : 'block'}}>
             {Object.keys(details) ? (
@@ -223,12 +237,11 @@ const Accounts = ({route}) => {
                 {columns[method['dataKey']].map((item, index) => {
                   const keyItem = Object.keys(item)[0];
                   return (
-                    <Text
-                      key={index}
-                      style={{padding:2, fontSize: 14}}>
+                    <Text key={index} style={{padding: 2, fontSize: 14}}>
                       <Text style={{fontWeight: 'bold'}}>
                         {item[keyItem].text}:
-                      </Text> {details[keyItem]}
+                      </Text>{' '}
+                      {details[keyItem]}
                     </Text>
                   );
                 })}
@@ -238,7 +251,10 @@ const Accounts = ({route}) => {
             )}
           </View>
           <View style={styles.searchWrapper}>
-            <Image source={require("../../assets/search.png")} style={styles.searchIcon} />
+            <Image
+              source={require('../../assets/search.png')}
+              style={styles.searchIcon}
+            />
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
@@ -316,6 +332,6 @@ const styles = StyleSheet.create({
   searchIcon: {
     position: 'absolute',
     top: 12,
-    left: 5
+    left: 5,
   },
 });

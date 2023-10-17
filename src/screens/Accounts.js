@@ -38,23 +38,20 @@ const Accounts = ({navigation}) => {
       ...prevState,
       loanLoading: true,
     }));
-    console.log('auth.state.sessionId', auth.state.userName);
-    auth
-      .listAccounts('loan', auth.state.clientId, auth.state.sessionId)
-      .then(data => {
-        if (data.loans.length) {
-          setAccounts(prevState => ({
-            ...prevState,
-            loan: data.loans,
-            loanLoading: false,
-          }));
-        } else {
-          setAccounts(prevState => ({
-            ...prevState,
-            loanLoading: false,
-          }));
-        }
-      });
+    auth.listAccounts('loan', auth.state.clientId).then(data => {
+      if (data.loans.length) {
+        setAccounts(prevState => ({
+          ...prevState,
+          loan: data.loans,
+          loanLoading: false,
+        }));
+      } else {
+        setAccounts(prevState => ({
+          ...prevState,
+          loanLoading: false,
+        }));
+      }
+    });
   }, []);
   useEffect(() => {
     setAccounts(prevState => ({
@@ -87,8 +84,8 @@ const Accounts = ({navigation}) => {
                 source={require('../../assets/user.png')}
               />
             </View>
-            <Text style={styles.accountTitle}>Welcome to Bayanihan Bank</Text>
-            <Text style={{fontSize: 12}}>
+            <Text style={styles.accountTitle}>Welcome to Bayanihan Bank </Text>
+            <Text style={{fontSize: 14, paddingLeft: 40}}>
               Account:
               <Text style={{textTransform: 'uppercase'}}>
                 {' '}
@@ -110,7 +107,7 @@ const Accounts = ({navigation}) => {
                 dataKeys={loanColumns}
                 type="loan"
                 type1="payments"
-                viewId={'Id'}
+                viewId={'id'}
                 profileHeaderTitle={'Loan Details'}
               />
             </View>
@@ -163,10 +160,14 @@ const styles = StyleSheet.create({
     },
   },
   accountContainer: {
-    paddingTop: 10,
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingTop: 0,
     paddingLeft: 10,
   },
   accountTitle: {
+    paddingLeft: 10,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -179,5 +180,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#fff',
     backgroundColor: '#01403c',
+  },
+  logo: {
+    paddingTop: 5,
   },
 });
