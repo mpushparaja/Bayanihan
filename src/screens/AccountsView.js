@@ -132,23 +132,23 @@ const Accounts = ({route}) => {
           formatter: dateFormatter,
         },
       },
-      {amount: {text: 'Amount', style: {fontSize: 16, fontWeight: 'bold'}}},
+      {amount: {text: 'Amount', style: {fontSize: 16}}},
     ],
     transactions: [
       {
         postedDate: {
           text: 'Payment Date',
-          style: {fontSize: 16},
+          style: {fontSize: 14, fontWeight: 'bold'},
           formatter: dateFormatter,
         },
       },
       {
         transactionType: {
           text: 'Type',
-          style: {fontSize: 16, fontWeight: 'bold'},
+          style: {fontSize: 14},
         },
       },
-      {amount: {text: 'Amount', style: {fontSize: 16, fontWeight: 'bold'}}},
+      {amount: {text: 'Amount', style: {fontSize: 14}}},
     ],
   };
   const method2 = transData[route.params.type];
@@ -217,13 +217,13 @@ const Accounts = ({route}) => {
         <View style={GenericStyles.container}>
           <View style={{display: isFocus ? 'none' : 'block'}}>
             {Object.keys(details) ? (
-              <View style={styles.wrapper}>
+              <View style={styles.viewWrapper} elevation={2}>
                 {columns[method['dataKey']].map((item, index) => {
                   const keyItem = Object.keys(item)[0];
                   return (
                     <Text
                       key={index}
-                      style={{paddingBottom: 8, paddingLeft: 10, fontSize: 16}}>
+                      style={{padding:2, fontSize: 14}}>
                       {item[keyItem].text}: {details[keyItem]}
                     </Text>
                   );
@@ -267,8 +267,7 @@ const styles = StyleSheet.create({
   searchWrapper: {
     marginTop: 10,
     borderRadius: 4,
-    borderColor: '#fff',
-    shadowColor: '#000000',
+    shadowColor: '#dedede',
     shadowOpacity: 0.2,
     shadowRadius: 1,
     shadowOffset: {
@@ -276,11 +275,25 @@ const styles = StyleSheet.create({
       width: 1,
     },
   },
+  viewWrapper: {
+    marginTop: 10,
+    padding: 4,
+    borderRadius: 10,
+    backgroundColor: '#e9ecef',
+    borderRadius: 15,
+    borderColor: '#e6e6e6',
+    shadowColor: '#000000',
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 1,
+      width: 1,
+    },
+  },
   wrapper: {
     marginTop: 10,
-    padding: 10,
     borderRadius: 10,
-    backgroundColor: '#d6d6d6',
+    backgroundColor: '#fff',
     borderRadius: 15,
     borderColor: '#e6e6e6',
     shadowColor: '#000000',
@@ -292,8 +305,8 @@ const styles = StyleSheet.create({
     },
   },
   searchTextInput: {
-    borderColor: '#d2d2d2',
     borderWidth: 1,
+    borderColor: '#bbb',
     paddingHorizontal: 20,
     borderRadius: 10,
     height: 50,

@@ -41,11 +41,11 @@ export default function Table({navigation = null, headerView = null, data=[], da
   if (headerView) {
     const renderItem = ({item, index})=> {
       return (
-        <View style={{...styles.tableRow}}>
+        <View style={[{...styles.tableRow}, {backgroundColor: (index+1) % 2 === 0 ? '#e9ecef' : null}]}>
           {dataKeys.map((key, index) => {
             const keyItem = Object.keys(key)[0]
             let keyValue = key[keyItem]
-            return <Text key={index} style={styles.columnRowTxt}>
+            return <Text key={index} style={[styles.columnRowTxt, keyValue.style]}>
               {keyValue.formatter ? keyValue.formatter(item[keyItem]): item[keyItem]}
             </Text>
           })}
@@ -103,13 +103,12 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 10,
     borderTopStartRadius: 10,
     height: 50,
-    backgroundColor: '#d2d2d2'
+    backgroundColor: '#01403c',
   },
   tableRow: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     height: 40,
-    marginBottom: 5,
     alignItems:"center",
     borderColor: '#e6e6e6',
     borderBottomWidth: 1,
@@ -117,11 +116,13 @@ const styles = StyleSheet.create({
   columnHeader: {
     width: "30%",
     justifyContent: "center",
-    alignItems:"center"
+    alignItems:"center",
   },
   columnHeaderTxt: {
     color: "#000",
     fontWeight: "bold",
+    color: '#fff'
+
   },
   columnRowTxt: {
     width:"30%",
