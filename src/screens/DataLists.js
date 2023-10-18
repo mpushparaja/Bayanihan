@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   FlatList,
@@ -8,29 +7,43 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+/**
+ * Fuctional component variables
+ */
+
 const DataLists = ({data, columns}) => {
-  const renderItem = ({item, index})=> {
+  const renderItem = ({item, index}) => {
     return (
       <View style={styles.rowWrapper}>
         {columns.map((key, index) => {
-            const keyItem = Object.keys(key)
-            return <Text key={index} style={{ fontSize: 18 }}>{item[keyItem]}</Text>
+          const keyItem = Object.keys(key);
+          return (
+            <Text key={index} style={{fontSize: 18}}>
+              {item[keyItem]}
+            </Text>
+          );
         })}
       </View>
-    )
-  }
+    );
+  };
 
   if (data.length) {
-    return <FlatList
-      data={data}
-      renderItem={renderItem}
-      keyExtractor={(item) => (item+"")}
-    />
+    return (
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={item => item + ''}
+      />
+    );
   } else {
     return <ActivityIndicator />;
   }
-}
+};
+export default DataLists;
 
+/**
+ * Fuctional component styles
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -47,5 +60,3 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 });
-
-export default DataLists;

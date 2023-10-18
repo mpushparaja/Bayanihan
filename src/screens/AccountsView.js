@@ -14,12 +14,23 @@ import Table from './Table';
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
 
+/**
+ * Functional component variables
+ */
 const Accounts = ({route}) => {
   const auth = context();
   const [accountsData, setAccounts] = useState({
     loan: {dataKey: 'loans', data: {}},
     deposit: {dataKey: 'account', data: {}},
   });
+  const dateFormatter = data => {
+    console.log(data);
+    const date = new Date(data);
+    const month = date.toLocaleString('default', {month: 'numeric'});
+    console.log('MonthData: ', month > 9 ? month : '0' + month);
+    const year = date.toLocaleString('default', {year: 'numeric'});
+    return month > 9 ? month : '0' + month + '-' + date.getDate() + '-' + year;
+  };
   const [isFocus, setFocus] = useState(false);
   const columns = {
     loans: [
@@ -46,6 +57,7 @@ const Accounts = ({route}) => {
         maturityDate: {
           text: 'Maturity Date',
           style: {fontSize: 16, fontWeight: 'bold'},
+          formatter: dateFormatter,
         },
       },
       {
@@ -101,6 +113,7 @@ const Accounts = ({route}) => {
   const details = method['data'] ? method['data'] : {};
   useEffect(() => {
     auth.findAccounts(route.params.type, route.params.viewId).then(data => {
+      console.log('Data:', data);
       setAccounts(prevState => {
         if (method.dataKey === 'loans') {
           return {
@@ -123,13 +136,6 @@ const Accounts = ({route}) => {
     loading: false,
   });
   const [query, setQuery] = useState('');
-
-  const dateFormatter = data => {
-    const date = new Date(data);
-    const month = date.toLocaleString('default', {month: 'short'});
-    const year = date.toLocaleString('default', {year: 'numeric'});
-    return date.getDate() + ' ' + month + ' ' + year;
-  };
 
   const columns1 = {
     payments: [
@@ -188,12 +194,7 @@ const Accounts = ({route}) => {
   const handleSearch = text => {
     const formattedQuery = text;
     let filteredData = details2.filter(item => {
-      const date = new Date(item.postedDate).toLocaleString('default', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
-      return date.includes(formattedQuery);
+      return dateFormatter(item.postedDate).includes(formattedQuery);
     });
 
     if (text === '') {
@@ -281,6 +282,9 @@ const Accounts = ({route}) => {
 
 export default Accounts;
 
+/**
+ * Fuctional component styles
+ */
 const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,

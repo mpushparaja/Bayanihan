@@ -14,6 +14,9 @@ import {Context as context} from '../../Context';
 import Loader from './Loader';
 import {GenericStyles} from '../styles/Styles';
 
+/**
+ * Fuctional component variables
+ */
 const Verification = ({navigation, onVerification}) => {
   const auth = context();
 
@@ -237,6 +240,9 @@ const Verification = ({navigation, onVerification}) => {
 
 export default Verification;
 
+/**
+ * Fuctional component styles
+ */
 const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',

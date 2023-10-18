@@ -8,6 +8,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+/**
+ * Fuctional component variables
+ */
 export default function Table({
   navigation = null,
   headerView = null,
@@ -119,6 +122,9 @@ export default function Table({
   );
 }
 
+/**
+ * Fuctional component styles
+ */
 const styles = StyleSheet.create({
   container: {
     width: '100%',

@@ -2,6 +2,9 @@ import React, {createContext, useState, useContext} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from './Config';
 
+/**
+ * Fuctional component variables
+ */
 const initialState = {
   loading: false,
   token: '',
@@ -177,6 +180,9 @@ export const Provider = ({children}) => {
   );
 };
 
+/**
+ *  Context initialisation
+ */
 export function Context() {
   const context = useContext(MyContext);
   // if (!context) {

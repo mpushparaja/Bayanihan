@@ -4,6 +4,9 @@ import Table from './Table';
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
 
+/**
+ * Functional component variables
+ */
 const Accounts = ({navigation}) => {
   const auth = context();
   const [accountsData, setAccounts] = useState({
@@ -138,6 +141,9 @@ const Accounts = ({navigation}) => {
 
 export default Accounts;
 
+/**
+ * Functional component Styles
+ */
 const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,

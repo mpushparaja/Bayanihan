@@ -1,10 +1,9 @@
-// Example of Splash, Login and Sign Up in React Native
-// https://aboutreact.com/react-native-login-and-signup/
-
-// Import React and Component
 import React from 'react';
 import {StyleSheet, View, Modal, ActivityIndicator} from 'react-native';
 
+/**
+ * Fuctional component variables
+ */
 const Loader = props => {
   const {loading, ...attributes} = props;
 
@@ -32,6 +31,9 @@ const Loader = props => {
 
 export default Loader;
 
+/**
+ * Fuctional component styles
+ */
 const styles = StyleSheet.create({
   modalBackground: {
     flex: 1,
