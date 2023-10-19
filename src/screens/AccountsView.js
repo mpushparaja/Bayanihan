@@ -24,10 +24,9 @@ const Accounts = ({route}) => {
     deposit: {dataKey: 'account', data: {}},
   });
   const dateFormatter = data => {
-    console.log(data);
     const date = new Date(data);
+    console.log(date)
     const month = date.toLocaleString('default', {month: 'numeric'});
-    console.log('MonthData: ', month > 9 ? month : '0' + month);
     const year = date.toLocaleString('default', {year: 'numeric'});
     return month > 9 ? month : '0' + month + '-' + date.getDate() + '-' + year;
   };
@@ -61,9 +60,10 @@ const Accounts = ({route}) => {
         },
       },
       {
-        loanNumber: {
+        grantDate: {
           text: 'Next Payment Due Date',
           style: {fontSize: 16, fontWeight: 'bold'},
+          formatter: dateFormatter,
         },
       },
       {
@@ -98,6 +98,7 @@ const Accounts = ({route}) => {
         maturityDate: {
           text: 'Maturity Date',
           style: {fontSize: 16, fontWeight: 'bold'},
+          formatter: dateFormatter,
         },
       },
       {
@@ -113,7 +114,6 @@ const Accounts = ({route}) => {
   const details = method['data'] ? method['data'] : {};
   useEffect(() => {
     auth.findAccounts(route.params.type, route.params.viewId).then(data => {
-      console.log('Data:', data);
       setAccounts(prevState => {
         if (method.dataKey === 'loans') {
           return {
@@ -241,8 +241,9 @@ const Accounts = ({route}) => {
                     <Text key={index} style={{padding: 2, fontSize: 14}}>
                       <Text style={{fontWeight: 'bold'}}>
                         {item[keyItem].text}:
-                      </Text>{' '}
-                      {details[keyItem]}
+                      </Text>
+                      {' '}
+                      {item[keyItem].formatter ? item[keyItem].formatter(details[keyItem]) : details[keyItem]}
                     </Text>
                   );
                 })}
