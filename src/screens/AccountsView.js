@@ -25,10 +25,9 @@ const Accounts = ({route}) => {
   });
   const dateFormatter = data => {
     const date = new Date(data);
-    console.log(date)
     const month = date.toLocaleString('default', {month: 'numeric'});
     const year = date.toLocaleString('default', {year: 'numeric'});
-    return month > 9 ? month : '0' + month + '-' + date.getDate() + '-' + year;
+    return (month > 9 ? month : ('0' + month)) + '-' + date.getDate() + '-' + year;
   };
   const [isFocus, setFocus] = useState(false);
   const columns = {
