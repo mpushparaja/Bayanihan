@@ -41,7 +41,7 @@ const Accounts = ({navigation}) => {
       ...prevState,
       loanLoading: true,
     }));
-    auth.listAccounts('loan', auth.state.clientId).then(data => {
+    auth.listAccounts('loan', '491183').then(data => {
       if (data.loans.length) {
         setAccounts(prevState => ({
           ...prevState,

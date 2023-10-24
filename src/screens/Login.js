@@ -6,18 +6,17 @@ import {
   ScrollView,
   Keyboard,
   TouchableOpacity,
+  KeyboardAvoidingView,
   Image,
   Alert,
+  Platform,
 } from 'react-native';
-import {TextInput} from 'react-native-paper';
+import TextField from './TextField'
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
 import Loader from './Loader';
 
-/**
- * Fuctional component variables
- */
-const Login = ({navigation}) => {
+export default function Login() {
   const auth = context();
   const [login, setLogin] = useState({
     username: '',
@@ -80,87 +79,76 @@ const Login = ({navigation}) => {
   };
 
   return (
-    <ScrollView style={GenericStyles.container}>
-      <Loader loading={auth.state.loading} />
-      <View style={styles.logo}>
-        <Image source={require('../../assets/splashlogo.png')} />
-      </View>
-      <View>
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.TextInput}
-            mode="outlined"
-            label="Username"
-            placeholder="Enter your username"
-            placeholderTextColor="#888"
-            autoCapitalize="none"
-            returnKeyType="next"
-            onSubmitEditing={() =>
-              passwordInputRef.current && passwordInputRef.current.focus()
-            }
-            onChangeText={handleInput('username')}
-            underlineColorAndroid="#f000"
-            blurOnSubmit={false}
-            theme={styles.textInputOutlineStyle}
-          />
-        </View>
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.TextInput}
-            mode="outlined"
-            label="Password"
-            placeholder="Password"
-            ref={passwordInputRef}
-            placeholderTextColor="#888"
-            onSubmitEditing={Keyboard.dismiss}
-            secureTextEntry={login.hidePassword}
-            returnKeyType="next"
-            underlineColorAndroid="#f000"
-            blurOnSubmit={false}
-            onChangeText={handleInput('password')}
-            theme={styles.textInputOutlineStyle}
-          />
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.touachableButton}
-            onPress={setPasswordVisibility}>
-            <Image
-              source={
-                login.hidePassword
-                  ? require('../../assets/eye.png')
-                  : require('../../assets/eye-slash.png')
-              }
-              style={styles.buttonImage}
-            />
-          </TouchableOpacity>
-        </View>
-        {auth.state.error && (
-          <View style={styles.errorWrapper}>
-            <Text style={styles.error}>{auth.state.error}</Text>
+      <KeyboardAvoidingView>
+        <ScrollView style={GenericStyles.container} keyboardShouldPersistTaps='always'>
+          <Loader loading={auth.state.loading} />
+          <View style={styles.logo}>
+            <Image source={require('../../assets/splashlogo.png')} />
           </View>
-        )}
-        <View style={{paddingTop: 30}}>
-          <TouchableOpacity
-            style={GenericStyles.btnWrapper}
-            onPress={onLogin}
-            activeOpacity={0.5}>
-            <Text style={GenericStyles.buttonTextStyle}>Login</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
-  );
-};
+          <View>
+            <View style={styles.inputView}>
+              <TextField
+                value={login .username}
+                label="Username"
+                placeholder="Enter your username"
+                returnKeyType="next"
+                onSubmitEditing={() =>
+                  passwordInputRef.current && passwordInputRef.current.focus()
+                }
+                autoCapitalize="none"
+                blurOnSubmit={false}
+                onChangeText={handleInput('username')}
+              />
+            </View>
+            <View style={styles.inputView}>
+              <TextField
+                value={login.password}
+                label="Password"
+                placeholder="Enter your password"
+                innerRef={passwordInputRef}
+                onSubmitEditing={Keyboard.dismiss}
+                returnKeyType="next"
+                blurOnSubmit={false}
+                secureTextEntry={login.hidePassword}
+                onChangeText={handleInput('password')}
+              />
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.touachableButton}
+                onPress={setPasswordVisibility}>
+                <Image
+                  source={
+                    login.hidePassword
+                      ? require('../../assets/eye.png')
+                      : require('../../assets/eye-slash.png')
+                  }
+                  style={styles.buttonImage}
+                />
+              </TouchableOpacity>
+            </View>
+            {auth.state.error && (
+              <View style={styles.errorWrapper}>
+                <Text style={styles.error}>{auth.state.error}</Text>
+              </View>
+            )}
+            <View style={{paddingTop: 30}}>
+              <TouchableOpacity
+                style={GenericStyles.btnWrapper}
+                onPress={onLogin}
+                activeOpacity={0.5}>
+                <Text style={GenericStyles.buttonTextStyle}>Login</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+  )
+}
 
-export default Login;
-
-/**
- * Fuctional component styles
- */
 const styles = StyleSheet.create({
   touachableButton: {
     position: 'absolute',
-    top: 16,
+    top: 10,
     right: 3,
     height: 40,
     width: 35,
@@ -194,15 +182,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 5,
   },
-  TextInput: {
-    height: 50,
-    paddingLeft: 15,
-    paddingRight: 15,
-    borderRadius: 5,
-    color: '#000',
-    backgroundColor: '#FFF',
-    activeOutlineColor: '#01403c',
-  },
   forgot_button: {
     height: 30,
     marginTop: 15,
@@ -216,8 +195,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 70,
     marginBottom: 70,
-  },
-  textInputOutlineStyle: {
-    colors: {primary: '#01403c', placeholderTextColor: '#01403c'},
   },
 });
