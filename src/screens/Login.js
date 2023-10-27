@@ -9,14 +9,13 @@ import {
   KeyboardAvoidingView,
   Image,
   Alert,
-  Platform,
 } from 'react-native';
 import TextField from './TextField'
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
 import Loader from './Loader';
 
-export default function Login() {
+export default function Login({navigation}) {
   const auth = context();
   const [login, setLogin] = useState({
     username: '',
@@ -78,6 +77,10 @@ export default function Login() {
     }));
   };
 
+  const submitEditing = () => {
+    return passwordInputRef.current && passwordInputRef.current.focus()
+  }
+
   return (
       <KeyboardAvoidingView>
         <ScrollView style={GenericStyles.container} keyboardShouldPersistTaps='always'>
@@ -88,13 +91,11 @@ export default function Login() {
           <View>
             <View style={styles.inputView}>
               <TextField
-                value={login .username}
+                value={login.username}
                 label="Username"
                 placeholder="Enter your username"
                 returnKeyType="next"
-                onSubmitEditing={() =>
-                  passwordInputRef.current && passwordInputRef.current.focus()
-                }
+                onSubmitEditing={submitEditing}
                 autoCapitalize="none"
                 blurOnSubmit={false}
                 onChangeText={handleInput('username')}
@@ -131,7 +132,7 @@ export default function Login() {
                 <Text style={styles.error}>{auth.state.error}</Text>
               </View>
             )}
-            <View style={{paddingTop: 30}}>
+            <View style={styles.pad30}>
               <TouchableOpacity
                 style={GenericStyles.btnWrapper}
                 onPress={onLogin}
@@ -154,6 +155,9 @@ const styles = StyleSheet.create({
     width: 35,
     padding: 2,
   },
+  pad30: {
+    paddingTop: 30
+  },
   buttonImage: {
     resizeMode: 'contain',
     height: '70%',
@@ -169,26 +173,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 20,
   },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 60,
-    color: '#fb5b5a',
-    marginBottom: 40,
-  },
-  image: {
-    marginBottom: 40,
-  },
   inputView: {
     marginTop: 20,
     marginBottom: 5,
   },
-  forgot_button: {
-    height: 30,
-    marginTop: 15,
-    marginBottom: 30,
-    color: '#01403C',
-  },
-
   logo: {
     flex: 1,
     alignItems: 'center',

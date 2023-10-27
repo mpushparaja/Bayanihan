@@ -3,7 +3,6 @@ import {Image, TouchableOpacity, Alert} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from './src/screens/Login';
-//import Login from './src/screens/LoginFloat';
 import Accounts from './src/screens/Accounts';
 import AccountView from './src/screens/AccountsView';
 import Verification from './src/screens/Verification';

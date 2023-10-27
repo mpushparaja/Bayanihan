@@ -34,63 +34,65 @@ const TextField = (props) => {
     }).start()
   }, [focusAnim, isFocused, value])
 
+  const setFocus = (data) => () => {
+    setIsFocused(data)
+  }
+
   let color = isFocused ? '#01403c' : '#B9C4CA'
   if (errorText) {
     color = '#B00020'
   }
 
+  const animateStyle = [
+    styles.labelContainer,
+    {
+      transform: [
+        {
+          scale: focusAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, 0.75],
+          }),
+        },
+        {
+          translateY: focusAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [14, -12],
+          }),
+        },
+        {
+          translateX: focusAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [6, 0],
+          }),
+        },
+      ],
+    },
+    {zIndex: isFocused ? 1 : 0}, 
+  ];
+
+  const textInputStyle = [
+    styles.input,
+    {
+      borderColor: color,
+    },
+    {borderWidth: isFocused ? 2 : 1}, 
+  ];
+
   return (
     <>
-      <Animated.Text
-        style={[
-          styles.labelContainer,
-          {
-            transform: [
-              {
-                scale: focusAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [1, 0.75],
-                }),
-              },
-              {
-                translateY: focusAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [14, -12],
-                }),
-              },
-              {
-                translateX: focusAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [6, 0],
-                }),
-              },
-            ],
-          },
-          {zIndex: isFocused ? 1 : 0}, 
-        ]}
-      >
-      {isFocused ? label: ''}
+      <Animated.Text style={animateStyle}>
+        {isFocused ? label: ''}
       </Animated.Text>
       <TextInput
-        style={[
-          styles.input,
-          {
-            borderColor: color,
-          },
-          {borderWidth: isFocused ? 2 : 1}, 
-        ]}
+        style={textInputStyle}
         {...restOfProps}
         {...refProps}
         value={value}
         placeholder={isFocused ? placeholder : label}
         placeholderTextColor="#888"
         underlineColorAndroid="#f000"
-        onBlur={() => {
-          setIsFocused(false)
-        }}
-        onFocus={() => {
-          setIsFocused(true)
-        }}
+        onBlur={setFocus(false)}
+        onFocus={setFocus(true)}
       />
     </>
   )
@@ -102,7 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontSize: 16,
     height: 50,
-    color: '#000',
+    color: '#000000',
     paddingHorizontal: 12,
     backgroundColor: '#f4f4f4',
   },
