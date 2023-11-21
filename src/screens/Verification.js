@@ -109,7 +109,7 @@ const Verification = ({navigation, onVerification}) => {
     }, 1000);
   };
 
-  const onOtpChange = (value, index) => {
+  const onOtpChange = index => value => {
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
@@ -157,8 +157,15 @@ const Verification = ({navigation, onVerification}) => {
     }
   };
 
-  const disabledStyle = {
-    opacity: 0.5,
+  const resendButtonStyle = [
+    styles.loginBtn,
+    resendButtonDisabledTime > 0 && {
+      opacity: 0.5,
+    },
+  ];
+
+  const refCallback = index => input => {
+    inputs[index] = input;
   };
 
   // Keyboard automatically shown after open the screen
@@ -189,16 +196,14 @@ const Verification = ({navigation, onVerification}) => {
               value={digit}
               backgroundColor="#d3d3d3"
               onKeyPress={onOtpKeyPress(index)}
-              onChangeText={value => onOtpChange(value, index)}
+              onChangeText={onOtpChange(index)}
               maxLength={1}
               autoFocus={
                 Platform.OS === 'ios' && index === 0 ? true : undefined
               }
               keyboardType="numeric"
               key={index}
-              ref={input => {
-                inputs[index] = input;
-              }}
+              ref={refCallback(index)}
             />
           ))}
         </View>
@@ -217,10 +222,7 @@ const Verification = ({navigation, onVerification}) => {
         )}
         <View style={styles.buttonWrapper}>
           <TouchableOpacity
-            style={[
-              styles.loginBtn,
-              resendButtonDisabledTime > 0 && disabledStyle,
-            ]}
+            style={resendButtonStyle}
             onPress={onResendOtpButtonPress}
             activeOpacity={0.5}
             disabled={resendButtonDisabledTime > 0 ? true : false}>

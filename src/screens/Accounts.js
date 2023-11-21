@@ -41,7 +41,7 @@ const Accounts = ({navigation}) => {
       ...prevState,
       loanLoading: true,
     }));
-    auth.listAccounts('loan', auth.state.clientId).then(data => {
+    auth.listAccounts('loan', '491183').then(data => {
       if (data.loans.length) {
         setAccounts(prevState => ({
           ...prevState,
@@ -80,27 +80,28 @@ const Accounts = ({navigation}) => {
     <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
       <View style={GenericStyles.container}>
         <View style={styles.accountProfile}>
-          <View style={styles.accountContainer}>
+          <View style={styles.accountContainer} elevation={2}>
             <View style={styles.logo}>
               <Image
-                style={{height: 25, width: 25}}
+                style={styles.logoImage}
                 source={require('../../assets/user.png')}
               />
             </View>
-            <Text style={styles.accountTitle}>Welcome to Bayanihan Bank </Text>
-            <Text style={{fontSize: 14, paddingLeft: 40}}>
-              Account:
-              <Text style={{textTransform: 'uppercase'}}>
-                {' '}
-                {auth.state.userName ? auth.state.userName : ''}
+            <View>
+              <Text style={styles.accountTitle}>Welcome to Bayanihan Bank</Text>
+              <Text style={styles.accountDesc}>
+                <Text style={styles.fontBold}>Account:</Text>
+                <Text style={styles.textUpper}>
+                  {auth.state.userName ? ' ' + auth.state.userName : ''}
+                </Text>
               </Text>
-            </Text>
+            </View>
           </View>
         </View>
         <View>
           <>
             <Text style={styles.subTitle}>Loan Accounts</Text>
-            <View style={styles.wrapper} elevation={2}>
+            <View style={styles.wrapper} elevation={1}>
               <Table
                 navigation={navigation}
                 style={styles.tableData}
@@ -119,7 +120,7 @@ const Accounts = ({navigation}) => {
         <View>
           <>
             <Text style={styles.subTitle}>Deposit Accounts</Text>
-            <View style={styles.wrapper} elevation={2}>
+            <View style={styles.wrapper} elevation={1}>
               <Table
                 navigation={navigation}
                 headerView={false}
@@ -149,16 +150,18 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   accountProfile: {
-    paddingTop: 20,
+    paddingTop: 10,
   },
   wrapper: {
-    borderRadius: 15,
+    borderRadius: 5,
+    borderTopEndRadius: 0,
+    borderTopStartRadius: 0,
     padding: 10,
     backgroundColor: '#fefefe',
     borderColor: '#e6e6e6',
     borderWidth: 1,
     shadowColor: '#000000',
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 8,
     shadowOffset: {
       height: 1,
@@ -169,25 +172,56 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingTop: 0,
+    paddingTop: 6,
+    paddingBottom: 6,
     paddingLeft: 10,
+    backgroundColor: '#e9ecef',
+    borderRadius: 5,
+    borderColor: '#e6e6e6',
+    shadowColor: '#000000',
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 1,
+      width: 1,
+    },
   },
   accountTitle: {
     paddingLeft: 10,
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#000',
+  },
+  accountDesc: {
+    fontSize: 14,
+    paddingLeft: 10,
+    paddingTop: 2,
+  },
+  fontBold: {
+    fontWeight: 'bold',
+  },
+  textUpper: {
+    textTransform: 'uppercase',
   },
   subTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    borderRadius: 2,
+    borderBottomEndRadius: 0,
+    borderBottomStartRadius: 0,
     padding: 10,
     paddingLeft: 20,
     marginTop: 20,
-    marginBottom: 10,
     color: '#fff',
+    borderWidth: 1,
+    borderColor: '#01403c',
     backgroundColor: '#01403c',
   },
   logo: {
-    paddingTop: 5,
+    justifyContent: 'center'
   },
+  logoImage: {
+    height: 30,
+    width: 30
+  }
 });

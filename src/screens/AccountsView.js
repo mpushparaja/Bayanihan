@@ -224,6 +224,8 @@ const Accounts = ({route}) => {
     };
   }, []);
 
+  const focusStyle = {display: isFocus ? 'none' : 'block'};
+
   return (
     <SafeAreaView>
       <ScrollView
@@ -231,7 +233,7 @@ const Accounts = ({route}) => {
         contentInsetAdjustmentBehavior={'automatic'}
         style={styles.scrollView}>
         <View style={GenericStyles.container}>
-          <View style={{display: isFocus ? 'none' : 'block'}}>
+          <View style={focusStyle}>
             {Object.keys(details) ? (
               <View style={styles.viewWrapper} elevation={2}>
                 {columns[method['dataKey']].map((item, index) => {
@@ -261,7 +263,7 @@ const Accounts = ({route}) => {
               autoCorrect={false}
               clearButtonMode="always"
               value={query}
-              onChangeText={queryText => handleSearch(queryText)}
+              onChangeText={handleSearch}
               placeholder="Search by payment date (mm-dd-yyyy)"
               style={styles.searchTextInput}
             />
