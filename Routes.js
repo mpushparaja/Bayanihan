@@ -7,6 +7,10 @@ import Accounts from './src/screens/Accounts';
 import AccountView from './src/screens/AccountsView';
 import Verification from './src/screens/Verification';
 import {Context as context} from './Context';
+import Home from './src/screens/Home';
+import FundTransferView from './src/screens/FundTransferView';
+import FundAccountView from './src/screens/FundAccountView';
+import AddRecipient from './src/screens/AddReceipent';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +42,21 @@ const MyRoutes = () => {
         {isProtectedRoutes ? (
           <>
             <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{
+                headerTintColor: '#fff',
+                headerStyle: {
+                  backgroundColor: '#01403c',
+                },
+                headerRight: () => (
+                  <TouchableOpacity onPress={showConfirmDialog}>
+                    <Image source={require('./assets/logout-1.png')} />
+                  </TouchableOpacity>
+                ),
+              }}
+            />
+            <Stack.Screen
               name="Accounts"
               component={Accounts}
               options={{
@@ -67,6 +86,54 @@ const MyRoutes = () => {
                   </TouchableOpacity>
                 ),
               })}
+            />
+            {/* Fund transfer view - Dashboad */}
+            <Stack.Screen
+              name="FundTransferView"
+              component={FundTransferView}
+              options={{
+                headerTintColor: '#fff',
+                headerStyle: {
+                  backgroundColor: '#01403c',
+                },
+                headerRight: () => (
+                  <TouchableOpacity onPress={showConfirmDialog}>
+                    <Image source={require('./assets/logout-1.png')} />
+                  </TouchableOpacity>
+                ),
+              }}
+            />
+            {/* Fund Account view  */}
+            <Stack.Screen
+              name="FundAccountView"
+              component={FundAccountView}
+              options={{
+                headerTintColor: '#fff',
+                headerStyle: {
+                  backgroundColor: '#01403c',
+                },
+                headerRight: () => (
+                  <TouchableOpacity onPress={showConfirmDialog}>
+                    <Image source={require('./assets/logout-1.png')} />
+                  </TouchableOpacity>
+                ),
+              }}
+            />
+            {/* Add receipient view  */}
+            <Stack.Screen
+              name="AddRecipient"
+              component={AddRecipient}
+              options={{
+                headerTintColor: '#fff',
+                headerStyle: {
+                  backgroundColor: '#01403c',
+                },
+                headerRight: () => (
+                  <TouchableOpacity onPress={showConfirmDialog}>
+                    <Image source={require('./assets/logout-1.png')} />
+                  </TouchableOpacity>
+                ),
+              }}
             />
           </>
         ) : (
