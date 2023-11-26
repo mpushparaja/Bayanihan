@@ -92,6 +92,7 @@ const MyRoutes = () => {
               name="FundTransferView"
               component={FundTransferView}
               options={{
+                title: 'Receipients',
                 headerTintColor: '#fff',
                 headerStyle: {
                   backgroundColor: '#01403c',

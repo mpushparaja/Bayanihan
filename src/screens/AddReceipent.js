@@ -3,48 +3,130 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  Button,
+  Alert,
   TextInput,
   Text,
   TouchableOpacity,
 } from 'react-native';
 import {GenericStyles} from '../styles/Styles';
+import {Context as context} from '../../Context';
+import Loader from './Loader';
 
 /**
  * Functional component variables
  */
 const AddRecipient = ({navigation}) => {
-  const [number, onChangeNumber] = React.useState('');
+  const auth = context();
+  const [state, setAdd] = React.useState({firstname: '', lastname: '', accountnumber: '', confirmaccountnumber:''});
+
+  const handleChange = name => value => {
+    setAdd(prevState => ({
+      ...prevState,
+      [name]: value,
+    }))
+  }
+
+  const onAdd = () => {
+    if (!state.firstname) {
+      Alert.alert('Please fill First Name');
+      return;
+    }
+    if (!state.lastname) {
+      Alert.alert('Please fill Last Name');
+      return;
+    }
+    if (!state.accountnumber) {
+      Alert.alert('Please fill Account Number');
+      return;
+    }
+    if (!state.confirmaccountnumber) {
+      Alert.alert('Please fill Confirm Account Number');
+      return;
+    }
+
+    if (state.accountnumber !== state.confirmaccountnumber) {
+      Alert.alert('Please Confirm Account Number should be match');
+      return;
+    }
+
+    auth.setState(prevState => ({
+      ...prevState,
+      loading: true,
+    }));
+
+    auth.addRecipient(state, auth.state.clientId).then(data => {
+      if (data && data.status === 'success') {
+        auth.setState(prevState => ({
+          ...prevState,
+          loading: false,
+        }));
+        navigation.navigate('FundTransferView');
+      }
+    });
+  }
+
+  // const submitEditing = (name) => () => {
+  //   return passwordInputRef.current && passwordInputRef.current.focus()
+  // }
 
   return (
     <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
+      <Loader loading={auth.state.loading} />
       <View style={GenericStyles.container}>
         <Text style={styles.title}>Create Recipient</Text>
       </View>
       <View style={GenericStyles.container}>
-        <Text style={styles.title}>Name:</Text>
+        <Text style={styles.title}>First Name:</Text>
         <TextInput
           style={styles.input}
-          onChangeText={onChangeNumber}
-          value={number}
+          onChangeText={handleChange('firstname')}
+          value={state.firstname}
           placeholderTextColor="#888"
-          placeholder="Account holder name"
+          blurOnSubmit={false}
+          returnKeyType="next"
+          placeholder="First Name"
+        />
+      </View>
+      <View style={GenericStyles.container}>
+        <Text style={styles.title}>Last Name:</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={handleChange('lastname')}
+          value={state.lastname}
+          placeholderTextColor="#888"
+          placeholder="Last Name"
+          blurOnSubmit={false}
+          returnKeyType="next"
         />
       </View>
       <View style={GenericStyles.container}>
         <Text style={styles.title}>Account Number:</Text>
         <TextInput
           style={styles.input}
-          onChangeText={onChangeNumber}
-          value={number}
+          onChangeText={handleChange('accountnumber')}
+          value={state.accountnumber}
+          placeholderTextColor="#888"
           placeholder="Account number"
-          keyboardType="numeric"
+          blurOnSubmit={false}
+          returnKeyType="next"
+        />
+      </View>
+      <View style={GenericStyles.container}>
+        <Text style={styles.title}>Confirm Account Number:</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={handleChange('confirmaccountnumber')}
+          value={state.confirmaccountnumber}
+          placeholderTextColor="#888"
+          placeholder="Confirm Account number"
+          blurOnSubmit={false}
+          returnKeyType="next"
         />
       </View>
       <View style={styles.btnContainer}>
         <TouchableOpacity
           style={styles.btnWrapper}
-          onPress={() => navigation.navigate('FundTransferView')}
+          onPress={onAdd}
           activeOpacity={0.5}>
           <Text style={styles.buttonTextStyle}>Add</Text>
         </TouchableOpacity>

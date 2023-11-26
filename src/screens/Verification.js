@@ -44,7 +44,7 @@ const Verification = ({navigation, onVerification}) => {
           clientId: data.clientuser.clientId,
         }));
         onVerification(data.clientuser.clientId);
-        navigation.navigate('Accounts');
+        navigation.navigate('Home');
       } else {
         auth.setState(prevState => ({
           ...prevState,

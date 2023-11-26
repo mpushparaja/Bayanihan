@@ -40,6 +40,53 @@ export const Provider = ({children}) => {
     }
   };
 
+  const addRecipient = async (auth, clientid) => {
+    try {
+      console.log(JSON.stringify({
+        clientid: clientid,
+        firstname: auth.firstname,
+        lastname: auth.lastname,
+        accountnumber: auth.accountnumber,
+      }))
+      const response = await fetch(config.API_URL + 'recipient/add', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          clientid: clientid.toString(),
+          firstname: auth.firstname,
+          lastname: auth.lastname,
+          accountnumber: auth.accountnumber,
+        }),
+      });
+      const responseJson = await response.json();
+      return responseJson;
+    } catch (error) {
+      console.error('error', error);
+    }
+  };
+
+  const listRecipient = async clientId => {
+    try {
+      const response = await fetch(
+        config.API_URL + 'client/find/recipients?id=' + clientId,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const responseJson = await response.json();
+      return responseJson;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const saveMFA = async auth => {
     try {
       const response = await fetch(config.API_URL + 'auth/password/mfa', {
@@ -174,6 +221,8 @@ export const Provider = ({children}) => {
         saveMFA,
         getToken,
         removeToken,
+        addRecipient,
+        listRecipient,
       }}>
       {children}
     </MyContext.Provider>
