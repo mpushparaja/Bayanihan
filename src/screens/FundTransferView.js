@@ -14,7 +14,7 @@ import {Context as context} from '../../Context';
 /**
  * Functional component variables
  */
-const FundTransferView = ({navigation}) => {
+const FundTransferView = ({navigation, route}) => {
   const auth = context();
   const [receipient, setRecipient] = useState({
     loading: false,
@@ -34,36 +34,44 @@ const FundTransferView = ({navigation}) => {
         }));
       }
     });
-  }, []);
+  }, [route]);
+
+  const toView = (item) => () => {
+    auth.setState(prevState => ({
+      ...prevState,
+      fundsView: item,
+    }));
+    navigation.navigate('FundAccountView')
+  }
 
   return (
     <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
       <View style={GenericStyles.container}>
-        <TouchableOpacity
-          style={styles.addRecp}
-          onPress={() => navigation.navigate('AddRecipient')}
-          activeOpacity={0.5}>
-          <Text style={styles.buttonTextStyle}>Add recepeint</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={GenericStyles.container}>
-        <Text style={styles.title}>All Receipients</Text>
-      </View>
-      {receipient.receipientDetails.map((item, index) => (
-        <View key={index} style={styles.wrapperItems}>
+        <View style={styles.btnWrapper}>
           <TouchableOpacity
-              onPress={() => navigation.navigate('FundAccountView', {
-                viewName: item.firstName
-              })}
-              activeOpacity={0.5}>
-            <View>
-              <Text>{item.firstName} {item.lastName}</Text>
-              <Image source={require('./assets/left-arrow.png')} />
-            </View>
+            style={styles.addRecp}
+            onPress={() => navigation.navigate('AddRecipient')}
+            activeOpacity={0.5}>
+            <Text style={styles.buttonTextStyle}>Add recepeint</Text>
           </TouchableOpacity>
         </View>
-      ))}
-      {receipient.loading && <ActivityIndicator />}
+        <View>
+          <Text style={styles.title}>All Receipients</Text>
+        </View>
+        {receipient.receipientDetails.map((item, index) => (
+          <View key={index} style={styles.wrapperItems}>
+            <TouchableOpacity
+                onPress={toView(item)}
+                activeOpacity={0.5}>
+              <View style={styles.recpList}>
+                <Text>{item.firstName} {item.lastName}</Text>
+                <Image style={styles.arrowImage} source={require('../../assets/right-arrow.png')} />
+              </View>
+            </TouchableOpacity>
+          </View>
+        ))}
+        {receipient.loading && <ActivityIndicator />}
+      </View>
     </ScrollView>
   );
 };
@@ -80,24 +88,25 @@ const styles = StyleSheet.create({
   title: {
     paddingLeft: 0,
     paddingTop: 20,
+    paddingBottom: 10,
     fontSize: 16,
     fontWeight: 'bold',
     color: '#000',
   },
-  wrapperItems: {
-    paddingLeft: 20,
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderColor: '#e6e6e6',
-    borderBottomWidth: 1,
+  arrowImage: {
+    height: 20,
+    width: 20,
   },
-  btnContainer: {
-    paddingTop: 20,
-    paddingLeft: 20,
+  recpList: {
     flex: 1,
     flexDirection: 'row',
-    padding: 30,
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
+  },
+  wrapperItems: {
+    paddingTop: 10,
+    paddingBottom: 15,
+    borderColor: '#e6e6e6',
+    borderBottomWidth: 1,
   },
   addRecp: {
     width: '45%',
@@ -105,19 +114,15 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
-    marginRight: 35,
+    marginTop: 30,
+    marginBottom: 10,
     backgroundColor: '#01403c',
     opacity: 1,
   },
   btnWrapper: {
-    marginBottom: 40,
-    height: 50,
-    width: 100,
-    fontSize: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#01403c',
+    flex: 1,
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between'
   },
   buttonTextStyle: {
     color: '#fff',

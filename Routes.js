@@ -107,19 +107,18 @@ const MyRoutes = () => {
             {/* Fund Account view  */}
             <Stack.Screen
               name="FundAccountView"
-              component={FundAccountView}
               options={{
+                title: 'Receipient Details',
                 headerTintColor: '#fff',
                 headerStyle: {
                   backgroundColor: '#01403c',
                 },
-                headerRight: () => (
-                  <TouchableOpacity onPress={showConfirmDialog}>
-                    <Image source={require('./assets/logout-1.png')} />
-                  </TouchableOpacity>
-                ),
               }}
-            />
+            >
+              {props => (
+              <FundAccountView {...props} />
+            )}
+            </Stack.Screen>
             {/* Add receipient view  */}
             <Stack.Screen
               name="AddRecipient"

@@ -60,7 +60,7 @@ const AddRecipient = ({navigation}) => {
           ...prevState,
           loading: false,
         }));
-        navigation.navigate('FundTransferView');
+        navigation.navigate('FundTransferView', {'paramPropKey': 'paramPropValue'});
       }
     });
   }

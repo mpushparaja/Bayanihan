@@ -12,6 +12,7 @@ const initialState = {
   secure: '',
   pwd: '',
   clientId: '',
+  fundsView: {}
 };
 
 const MyContext = createContext(initialState);
@@ -42,12 +43,6 @@ export const Provider = ({children}) => {
 
   const addRecipient = async (auth, clientid) => {
     try {
-      console.log(JSON.stringify({
-        clientid: clientid,
-        firstname: auth.firstname,
-        lastname: auth.lastname,
-        accountnumber: auth.accountnumber,
-      }))
       const response = await fetch(config.API_URL + 'recipient/add', {
         method: 'POST',
         headers: {
@@ -65,6 +60,23 @@ export const Provider = ({children}) => {
       return responseJson;
     } catch (error) {
       console.error('error', error);
+    }
+  };
+
+  const deleteRecipient = async recipientId => {
+    try {
+      const response = await fetch(config.API_URL + 'recipient/delete?id=' + recipientId, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseJson = await response.json();
+      console.log('delete', responseJson)
+      return responseJson;
+    } catch (error) {
+      console.error('derror', error);
     }
   };
 
@@ -222,6 +234,7 @@ export const Provider = ({children}) => {
         getToken,
         removeToken,
         addRecipient,
+        deleteRecipient,
         listRecipient,
       }}>
       {children}

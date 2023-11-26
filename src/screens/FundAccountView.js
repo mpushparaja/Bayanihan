@@ -1,38 +1,63 @@
-import React from 'react';
+import React, {useLayoutEffect} from 'react';
 import {
   StyleSheet,
   View,
-  ScrollView,
-  Button,
   Text,
   TouchableOpacity,
+  Image,
+  Alert,
 } from 'react-native';
 import {GenericStyles} from '../styles/Styles';
+import {Context as context} from '../../Context';
 
 /**
  * Functional component variables
  */
 const FundAccountView = ({navigation}) => {
-  return (
-    <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
-      <View style={GenericStyles.container}>
-        <Text style={styles.title}>Account Transfer View</Text>
-      </View>
-      <View style={GenericStyles.container}>
-        <Text style={styles.title}>Name:</Text>
-      </View>
-      <View style={GenericStyles.container}>
-        <Text style={styles.title}>Account Number:</Text>
-      </View>
-      <View style={styles.btnContainer}>
-        <TouchableOpacity
-          style={styles.btnWrapper}
-          onPress={() => navigation.navigate('FundTransferView')}
-          activeOpacity={0.5}>
-          <Text style={styles.buttonTextStyle}>Back</Text>
+  const auth = context();
+  const onDelete = () => {
+    auth.deleteRecipient(auth.state.fundsView.id).then((data) => {
+      if (data.status === 'success') {
+        navigation.navigate('FundTransferView', {'paramPropKey': 'paramPropValue'});
+      }
+    });
+  }
+
+  const onDeleteRecipient = () => {
+    Alert.alert('', 'Are you sure to delete the recipent', [
+      {text: 'Confirm', onPress: onDelete},
+      {
+        text: 'Cancel',
+      },
+    ]);
+  }
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={onDeleteRecipient}>
+          <Image style={styles.deleteImage} source={require('../../assets/delete.png')} />
         </TouchableOpacity>
+      ),
+    });
+  }, [navigation])
+  return (
+    <View style={styles.container}>
+      <View style={GenericStyles.container}>
+        <View style={styles.viewWrapper} elevation={2}>
+          <Text style={styles.textData}>{auth.state.fundsView.firstName} {auth.state.fundsView.lastName}</Text>
+          <Text>{auth.state.fundsView.accountNumber}</Text>
+        </View>
+        <View style={styles.btnContainer}>
+          <TouchableOpacity
+            style={styles.btnWrapper}
+            onPress={() => navigation.navigate('FundTransferView')}
+            activeOpacity={0.5}>
+            <Text style={styles.buttonTextStyle}>Pay</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -42,26 +67,36 @@ export default FundAccountView;
  * Functional component Styles
  */
 const styles = StyleSheet.create({
-  scrollView: {
-    flexGrow: 1,
+  container: {
+    flex: 1,
   },
-  title: {
-    paddingLeft: 0,
-    paddingTop: 20,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
+  deleteImage: {
+    height: 25,
+    width: 25,
+  },
+  viewWrapper: {
+    marginTop: 30,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: '#e9ecef',
+    borderRadius: 15,
+    borderColor: '#e6e6e6',
+    shadowColor: '#000000',
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 1,
+      width: 1,
+    },
+  },
+  textData: {
+    paddingBottom: 10,
+    fontWeight: 'bold'
   },
   btnContainer: {
-    paddingTop: 20,
-    paddingLeft: 20,
-    flex: 1,
-    flexDirection: 'row',
-    padding: 30,
-    justifyContent: 'space-between',
+    marginTop: 30,
   },
   btnWrapper: {
-    marginBottom: 40,
     height: 50,
     width: 100,
     alignItems: 'center',
