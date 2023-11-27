@@ -11,6 +11,7 @@ import Home from './src/screens/Home';
 import FundTransferView from './src/screens/FundTransferView';
 import FundAccountView from './src/screens/FundAccountView';
 import AddRecipient from './src/screens/AddReceipent';
+import MoneyTransfer from './src/screens/MoneyTransfer';
 
 const Stack = createNativeStackNavigator();
 
@@ -93,6 +94,23 @@ const MyRoutes = () => {
               component={FundTransferView}
               options={{
                 title: 'Receipients',
+                headerTintColor: '#fff',
+                headerStyle: {
+                  backgroundColor: '#01403c',
+                },
+                headerRight: () => (
+                  <TouchableOpacity onPress={showConfirmDialog}>
+                    <Image source={require('./assets/logout-1.png')} />
+                  </TouchableOpacity>
+                ),
+              }}
+            />
+            {/* Fund transfer view - Dashboad */}
+            <Stack.Screen
+              name="MoneyTransfer"
+              component={MoneyTransfer}
+              options={{
+                title: 'Transfer',
                 headerTintColor: '#fff',
                 headerStyle: {
                   backgroundColor: '#01403c',

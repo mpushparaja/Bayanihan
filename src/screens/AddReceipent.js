@@ -1,21 +1,26 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   StyleSheet,
   View,
   ScrollView,
   Alert,
-  TextInput,
+  KeyboardAvoidingView,
   Text,
   TouchableOpacity,
+  Keyboard,
 } from 'react-native';
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
+import TextField from './TextField'
 import Loader from './Loader';
 
 /**
  * Functional component variables
  */
 const AddRecipient = ({navigation}) => {
+  const lastnameInputRef = useRef();
+  const accountnumberInputRef = useRef();
+  const confirmaccountnumberInputRef = useRef();
   const auth = context();
   const [state, setAdd] = React.useState({firstname: '', lastname: '', accountnumber: '', confirmaccountnumber:''});
 
@@ -26,29 +31,7 @@ const AddRecipient = ({navigation}) => {
     }))
   }
 
-  const onAdd = () => {
-    if (!state.firstname) {
-      Alert.alert('Please fill First Name');
-      return;
-    }
-    if (!state.lastname) {
-      Alert.alert('Please fill Last Name');
-      return;
-    }
-    if (!state.accountnumber) {
-      Alert.alert('Please fill Account Number');
-      return;
-    }
-    if (!state.confirmaccountnumber) {
-      Alert.alert('Please fill Confirm Account Number');
-      return;
-    }
-
-    if (state.accountnumber !== state.confirmaccountnumber) {
-      Alert.alert('Please Confirm Account Number should be match');
-      return;
-    }
-
+  const onConfirmAdd = () => {
     auth.setState(prevState => ({
       ...prevState,
       loading: true,
@@ -65,79 +48,128 @@ const AddRecipient = ({navigation}) => {
     });
   }
 
-  // const submitEditing = (name) => () => {
-  //   return passwordInputRef.current && passwordInputRef.current.focus()
-  // }
+  const onAdd = () => {
+    if (!state.firstname) {
+      Alert.alert('Please enter first name');
+      return;
+    }
+    if (!state.lastname) {
+      Alert.alert('Please enter last name');
+      return;
+    }
+    if (!state.accountnumber) {
+      Alert.alert('Please enter account number');
+      return;
+    }
+    if (!state.confirmaccountnumber) {
+      Alert.alert('Please enter confirm account number');
+      return;
+    }
+    if (state.accountnumber !== state.confirmaccountnumber) {
+      Alert.alert("Confirm account number doesn't match the account number");
+      return;
+    }
+
+    Alert.alert('', 'Are you sure to add the recipient', [
+      {text: 'Confirm', onPress: onConfirmAdd},
+      {
+        text: 'Cancel',
+      },
+    ]);
+  }
+
+  const submitEditing = (input) => () => {
+    return input.current && input.current.focus()
+  }
+
+  const checkDisabled = () => {
+    let disabled = true;
+    if(state.firstname && state.lastname && state.accountnumber && state.confirmaccountnumber) {
+      disabled = false;
+    }
+    return disabled;
+  }
+
+  const addButtonStyle = [
+    styles.btnWrapper,
+    checkDisabled() && {
+      opacity: 0.5,
+    },
+  ];
 
   return (
-    <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
-      <Loader loading={auth.state.loading} />
-      <View style={GenericStyles.container}>
-        <Text style={styles.title}>Create Recipient</Text>
-      </View>
-      <View style={GenericStyles.container}>
-        <Text style={styles.title}>First Name:</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChange('firstname')}
-          value={state.firstname}
-          placeholderTextColor="#888"
-          blurOnSubmit={false}
-          returnKeyType="next"
-          placeholder="First Name"
-        />
-      </View>
-      <View style={GenericStyles.container}>
-        <Text style={styles.title}>Last Name:</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChange('lastname')}
-          value={state.lastname}
-          placeholderTextColor="#888"
-          placeholder="Last Name"
-          blurOnSubmit={false}
-          returnKeyType="next"
-        />
-      </View>
-      <View style={GenericStyles.container}>
-        <Text style={styles.title}>Account Number:</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChange('accountnumber')}
-          value={state.accountnumber}
-          placeholderTextColor="#888"
-          placeholder="Account number"
-          blurOnSubmit={false}
-          returnKeyType="next"
-        />
-      </View>
-      <View style={GenericStyles.container}>
-        <Text style={styles.title}>Confirm Account Number:</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChange('confirmaccountnumber')}
-          value={state.confirmaccountnumber}
-          placeholderTextColor="#888"
-          placeholder="Confirm Account number"
-          blurOnSubmit={false}
-          returnKeyType="next"
-        />
-      </View>
-      <View style={styles.btnContainer}>
-        <TouchableOpacity
-          style={styles.btnWrapper}
-          onPress={onAdd}
-          activeOpacity={0.5}>
-          <Text style={styles.buttonTextStyle}>Add</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.btnWrapper}
-          onPress={() => navigation.navigate('FundTransferView')}
-          activeOpacity={0.5}>
-          <Text style={styles.buttonTextStyle}>Cancel</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+    <KeyboardAvoidingView>
+      <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
+        <Loader loading={auth.state.loading} />
+        <View style={GenericStyles.container}>
+          <View>
+            <Text style={styles.title}>Create Recipient</Text>
+          </View>
+          <View style={styles.inputView}>
+            <TextField
+              onChangeText={handleChange('firstname')}
+              label="First name"
+              placeholder="Enter your first name"
+              value={state.firstname}
+              onSubmitEditing={submitEditing(lastnameInputRef)}
+              blurOnSubmit={false}
+              returnKeyType="next"
+            />
+          </View>
+          <View style={styles.inputView}>
+            <TextField
+              onChangeText={handleChange('lastname')}
+              onSubmitEditing={submitEditing(accountnumberInputRef)}
+              value={state.lastname}
+              label="Last name"
+              placeholder="Enter your last name"
+              blurOnSubmit={false}
+              innerRef={lastnameInputRef}
+              returnKeyType="next"
+            />
+          </View>
+          <View style={styles.inputView}>
+            <TextField
+              onChangeText={handleChange('accountnumber')}
+              value={state.accountnumber}
+              label="Account number"
+              placeholder="Enter your account number"
+              onSubmitEditing={submitEditing(confirmaccountnumberInputRef)}
+              blurOnSubmit={false}
+              innerRef={accountnumberInputRef}
+              returnKeyType="next"
+            />
+          </View>
+          <View style={styles.inputView}>
+            <TextField
+              onChangeText={handleChange('confirmaccountnumber')}
+              value={state.confirmaccountnumber}
+              onSubmitEditing={Keyboard.dismiss}
+              label="Confirm account number"
+              placeholder="Enter your confirm account number"
+              blurOnSubmit={false}
+              innerRef={confirmaccountnumberInputRef}
+              returnKeyType="next"
+            />
+          </View>
+          <View style={styles.btnContainer}>
+            <TouchableOpacity
+              style={addButtonStyle}
+              onPress={onAdd}
+              disabled={checkDisabled()}
+              activeOpacity={0.5}>
+              <Text style={styles.buttonTextStyle}>Add</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.btnWrapper}
+              onPress={() => navigation.navigate('FundTransferView')}
+              activeOpacity={0.5}>
+              <Text style={styles.buttonTextStyle}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -158,11 +190,9 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   btnContainer: {
-    paddingTop: 20,
-    paddingLeft: 20,
+    paddingTop: 30,
     flex: 1,
     flexDirection: 'row',
-    padding: 30,
     justifyContent: 'space-between',
   },
   btnWrapper: {
@@ -172,14 +202,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#01403c',
+    opacity: 1,
   },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 10,
-    borderColor: '#d6d6d6',
+  inputView: {
+    marginTop: 20,
+    marginBottom: 5,
   },
   buttonTextStyle: {
     color: '#fff',

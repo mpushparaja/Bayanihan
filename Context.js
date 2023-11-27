@@ -41,6 +41,29 @@ export const Provider = ({children}) => {
     }
   };
 
+  const moneyTransfer = async (senderaccountid, recipientid, amount) => {
+    try {
+      const response = await fetch(config.API_URL + 'deposit/transaction/moneytransfer', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          senderaccountid: senderaccountid,
+          recipientid: recipientid,
+          amount: amount,
+        }),
+      });
+      const responseJson = await response.json();
+      console.log('money', responseJson)
+
+      return responseJson;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const addRecipient = async (auth, clientid) => {
     try {
       const response = await fetch(config.API_URL + 'recipient/add', {
@@ -236,6 +259,7 @@ export const Provider = ({children}) => {
         addRecipient,
         deleteRecipient,
         listRecipient,
+        moneyTransfer,
       }}>
       {children}
     </MyContext.Provider>

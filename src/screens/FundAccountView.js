@@ -51,7 +51,7 @@ const FundAccountView = ({navigation}) => {
         <View style={styles.btnContainer}>
           <TouchableOpacity
             style={styles.btnWrapper}
-            onPress={() => navigation.navigate('FundTransferView')}
+            onPress={() => navigation.navigate('MoneyTransfer')}
             activeOpacity={0.5}>
             <Text style={styles.buttonTextStyle}>Pay</Text>
           </TouchableOpacity>
