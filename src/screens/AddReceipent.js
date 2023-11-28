@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -22,7 +22,7 @@ const AddRecipient = ({navigation}) => {
   const accountnumberInputRef = useRef();
   const confirmaccountnumberInputRef = useRef();
   const auth = context();
-  const [state, setAdd] = React.useState({firstname: '', lastname: '', accountnumber: '', confirmaccountnumber:''});
+  const [state, setAdd] = useState({firstname: '', lastname: '', accountnumber: '', confirmaccountnumber:'', error: ''});
 
   const handleChange = name => value => {
     setAdd(prevState => ({
@@ -44,6 +44,12 @@ const AddRecipient = ({navigation}) => {
           loading: false,
         }));
         navigation.navigate('FundTransferView', {'paramPropKey': 'paramPropValue'});
+      } else {
+        auth.setState(prevState => ({
+          ...prevState,
+          loading: false,
+          error: data.code
+        }));
       }
     });
   }
@@ -99,7 +105,7 @@ const AddRecipient = ({navigation}) => {
 
   return (
     <KeyboardAvoidingView>
-      <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
+      <ScrollView nestedScrollEnabled={true} style={styles.scrollView} keyboardShouldPersistTaps='always'>
         <Loader loading={auth.state.loading} />
         <View style={GenericStyles.container}>
           <View>
@@ -135,6 +141,7 @@ const AddRecipient = ({navigation}) => {
               label="Account number"
               placeholder="Enter your account number"
               onSubmitEditing={submitEditing(confirmaccountnumberInputRef)}
+              secureTextEntry={true}
               blurOnSubmit={false}
               innerRef={accountnumberInputRef}
               returnKeyType="next"
@@ -152,6 +159,7 @@ const AddRecipient = ({navigation}) => {
               returnKeyType="next"
             />
           </View>
+          {state.error ? <Text style={styles.error}>{state.error}</Text> : ''}
           <View style={styles.btnContainer}>
             <TouchableOpacity
               style={addButtonStyle}
@@ -188,6 +196,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#000',
+  },
+  error: {
+    paddingTop: 25,
+    color: '#ff0000'
   },
   btnContainer: {
     paddingTop: 30,

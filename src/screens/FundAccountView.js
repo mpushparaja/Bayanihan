@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
+// 001-51-492789-15
+// maria lee
 
 /**
  * Functional component variables

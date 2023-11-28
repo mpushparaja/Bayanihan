@@ -56,8 +56,6 @@ export const Provider = ({children}) => {
         }),
       });
       const responseJson = await response.json();
-      console.log('money', responseJson)
-
       return responseJson;
     } catch (error) {
       console.error(error);
@@ -96,7 +94,6 @@ export const Provider = ({children}) => {
         },
       });
       const responseJson = await response.json();
-      console.log('delete', responseJson)
       return responseJson;
     } catch (error) {
       console.error('derror', error);

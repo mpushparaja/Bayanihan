@@ -33,6 +33,12 @@ const FundTransferView = ({navigation, route}) => {
           loading: false,
         }));
       }
+      else {
+        setRecipient(prevState => ({
+          ...prevState,
+          loading: false,
+        }));
+      }
     });
   }, [route]);
 
@@ -64,13 +70,17 @@ const FundTransferView = ({navigation, route}) => {
                 onPress={toView(item)}
                 activeOpacity={0.5}>
               <View style={styles.recpList}>
-                <Text>{item.firstName} {item.lastName}</Text>
+                <View>
+                  <Text style={styles.fontBold}>{item.firstName} {item.lastName}</Text>
+                  <Text>{item.accountNumber}</Text>
+                </View>
                 <Image style={styles.arrowImage} source={require('../../assets/right-arrow.png')} />
               </View>
             </TouchableOpacity>
           </View>
         ))}
         {receipient.loading && <ActivityIndicator />}
+        {receipient.receipientDetails.length === 0 ? <Text style={styles.noRecords}>No records</Text>: ''}
       </View>
     </ScrollView>
   );
@@ -84,6 +94,9 @@ export default FundTransferView;
 const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,
+  },
+  fontBold: {
+    fontWeight: 'bold',
   },
   title: {
     paddingLeft: 0,
@@ -101,6 +114,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between'
+  },
+  noRecords: {
+    paddingTop: 10,
   },
   wrapperItems: {
     paddingTop: 10,

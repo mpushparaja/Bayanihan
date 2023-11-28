@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -10,23 +10,48 @@ import {
 } from 'react-native';
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
+import Loader from './Loader';
 
 /**
  * Functional component variables
  */
 const MoneyTransfer = ({navigation}) => {
   const auth = context();
-  const [amount, setAmount] = useState(0);
+  const [state, setState] = useState({'senderaccountid': '', amount: 0, error: '', loading: false});
   const onTransferAmount = () => {
-    auth.moneyTransfer(auth.state.clientId, auth.state.fundsView.id, amount).then((data) => {
+    setState(prevState => ({
+      ...prevState,
+      'loading': true,
+    }));
+    auth.moneyTransfer(state.senderaccountid, auth.state.fundsView.id, state.amount).then((data) => {
       if (data.status === 'success') {
         navigation.navigate('FundTransferView', {'paramPropKey': 'paramPropValue'});
+      } else {
+        setState(prevState => ({
+          ...prevState,
+          'error': data.code,
+          'loading': false,
+        }));
       }
     });
   }
 
+  useEffect(() => {
+    auth.listAccounts('deposit', auth.state.clientId).then((data) => {
+      if (data.status === 'success') {
+        setState(prevState => ({
+          ...prevState,
+          'senderaccountid': data.accounts[0]['accountId'],
+        }));
+      }
+    });
+  }, [])
+
   const handleChange = (value) => {
-    setAmount(value);
+    setState(prevState => ({
+      ...prevState,
+      'amount': value,
+    }));
   }
 
   const onTransferRequest = () => {
@@ -38,8 +63,16 @@ const MoneyTransfer = ({navigation}) => {
     ]);
   }
 
+  const sendButtonStyle = [
+    styles.btnWrapper,
+    state.amount <= 0 && {
+      opacity: 0.5,
+    },
+  ];
+
   return (
     <View style={styles.container}>
+      <Loader loading={state.loading} />
       <View style={GenericStyles.container}>
         <View>
           <View>
@@ -58,18 +91,21 @@ const MoneyTransfer = ({navigation}) => {
             <TextInput
               style={styles.input}
               onChangeText={handleChange}
-              value={amount}
+              value={parseFloat(state.amount)}
               onSubmitEditing={Keyboard.dismiss}
               placeholder="XXXX"
               blurOnSubmit={false}
               returnKeyType="next"
+              keyboardType="numeric"
               />
           </View>
         </View>
+        {state.error ? <Text style={styles.error}>{state.error}</Text> : ''}
         <View style={styles.btnContainer}>
           <TouchableOpacity
-            style={styles.btnWrapper}
+            style={sendButtonStyle}
             onPress={onTransferRequest}
+            disabled={state.amount > 0 ? false : true}
             activeOpacity={0.5}>
             <Text style={styles.buttonTextStyle}>Send</Text>
           </TouchableOpacity>
@@ -94,6 +130,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  error: {
+    paddingTop: 25,
+    color: '#ff0000'
+  },
   viewWrapper: {
      flexDirection: 'row',
      paddingTop: 10,
@@ -114,10 +154,10 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     borderWidth: 1,
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingLeft: 10,
+    paddingRight: 10,
     borderRadius: 4,
-    borderColor: '#d6d6d6',
+    borderColor: '#ccc',
   },
   btnContainer: {
     paddingTop: 30,
