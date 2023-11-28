@@ -17,42 +17,69 @@ import Loader from './Loader';
  */
 const MoneyTransfer = ({navigation}) => {
   const auth = context();
-  const [state, setState] = useState({'senderaccountid': '', amount: 0, error: '', loading: false});
+  const [state, setState] = useState({
+    senderaccountid: '',
+    amount: 0,
+    error: '',
+    loading: false,
+  });
+  const [availBalance, setAvailBalance] = useState(0);
   const onTransferAmount = () => {
     setState(prevState => ({
       ...prevState,
-      'loading': true,
+      loading: true,
     }));
-    auth.moneyTransfer(state.senderaccountid, auth.state.fundsView.id, state.amount).then((data) => {
-      if (data.status === 'success') {
-        navigation.navigate('FundTransferView', {'paramPropKey': 'paramPropValue'});
-      } else {
-        setState(prevState => ({
-          ...prevState,
-          'error': data.code,
-          'loading': false,
-        }));
-      }
-    });
-  }
+    auth
+      .moneyTransfer(
+        state.senderaccountid,
+        auth.state.fundsView.id,
+        state.amount,
+      )
+      .then(data => {
+        if (data.status === 'success') {
+          navigation.navigate('FundTransferView', {
+            paramPropKey: 'paramPropValue',
+          });
+          Alert.alert('Fund transfer completed successfully');
+        } else {
+          setState(prevState => ({
+            ...prevState,
+            error: data.code,
+            loading: false,
+          }));
+        }
+      });
+  };
 
   useEffect(() => {
-    auth.listAccounts('deposit', auth.state.clientId).then((data) => {
+    auth.listAccounts('deposit', auth.state.clientId).then(data => {
       if (data.status === 'success') {
         setState(prevState => ({
           ...prevState,
-          'senderaccountid': data.accounts[0]['accountId'],
+          senderaccountid: data.accounts[0]['accountId'],
         }));
       }
     });
-  }, [])
+  }, []);
 
-  const handleChange = (value) => {
+  useEffect(() => {
+    auth.listAccounts('deposit', auth.state.clientId).then(data => {
+      if (data.status === 'success') {
+        auth
+          .findAccounts('deposit', data.accounts[0]['accountId'])
+          .then(data => {
+            setAvailBalance(data['account']['availableBalance']);
+          });
+      }
+    });
+  }, []);
+
+  const handleChange = value => {
     setState(prevState => ({
       ...prevState,
-      'amount': value,
+      amount: value,
     }));
-  }
+  };
 
   const onTransferRequest = () => {
     Alert.alert('', 'Are you sure to transfer the amount', [
@@ -61,7 +88,7 @@ const MoneyTransfer = ({navigation}) => {
         text: 'Cancel',
       },
     ]);
-  }
+  };
 
   const sendButtonStyle = [
     styles.btnWrapper,
@@ -80,24 +107,30 @@ const MoneyTransfer = ({navigation}) => {
           </View>
           <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Name</Text>
-            <Text>{auth.state.fundsView.firstName} {auth.state.fundsView.lastName}</Text>
+            <Text>
+              {auth.state.fundsView.firstName} {auth.state.fundsView.lastName}
+            </Text>
           </View>
           <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Account Number</Text>
             <Text>{auth.state.fundsView.accountNumber}</Text>
           </View>
           <View style={styles.viewWrapper}>
+            <Text style={styles.textData}>Available Balance</Text>
+            <Text>{availBalance}</Text>
+          </View>
+          <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Amount</Text>
             <TextInput
               style={styles.input}
               onChangeText={handleChange}
-              value={parseFloat(state.amount)}
+              value={parseInt(state.amount)}
               onSubmitEditing={Keyboard.dismiss}
               placeholder="XXXX"
               blurOnSubmit={false}
               returnKeyType="next"
               keyboardType="numeric"
-              />
+            />
           </View>
         </View>
         {state.error ? <Text style={styles.error}>{state.error}</Text> : ''}
@@ -132,16 +165,16 @@ const styles = StyleSheet.create({
   },
   error: {
     paddingTop: 25,
-    color: '#ff0000'
+    color: '#ff0000',
   },
   viewWrapper: {
-     flexDirection: 'row',
-     paddingTop: 10,
-     alignItems: 'center',
+    flexDirection: 'row',
+    paddingTop: 10,
+    alignItems: 'center',
   },
   textData: {
     width: '40%',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   title: {
     paddingLeft: 0,

@@ -12,7 +12,7 @@ const initialState = {
   secure: '',
   pwd: '',
   clientId: '',
-  fundsView: {}
+  fundsView: {},
 };
 
 const MyContext = createContext(initialState);
@@ -43,18 +43,21 @@ export const Provider = ({children}) => {
 
   const moneyTransfer = async (senderaccountid, recipientid, amount) => {
     try {
-      const response = await fetch(config.API_URL + 'deposit/transaction/moneytransfer', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        config.API_URL + 'deposit/transaction/moneytransfer',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            senderaccountid: senderaccountid,
+            recipientid: recipientid,
+            amount: amount,
+          }),
         },
-        body: JSON.stringify({
-          senderaccountid: senderaccountid,
-          recipientid: recipientid,
-          amount: amount,
-        }),
-      });
+      );
       const responseJson = await response.json();
       return responseJson;
     } catch (error) {
@@ -86,13 +89,16 @@ export const Provider = ({children}) => {
 
   const deleteRecipient = async recipientId => {
     try {
-      const response = await fetch(config.API_URL + 'recipient/delete?id=' + recipientId, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        config.API_URL + 'recipient/delete?id=' + recipientId,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
         },
-      });
+      );
       const responseJson = await response.json();
       return responseJson;
     } catch (error) {
