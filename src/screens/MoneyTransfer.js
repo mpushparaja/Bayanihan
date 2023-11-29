@@ -22,9 +22,9 @@ const MoneyTransfer = ({navigation}) => {
     amount: '',
     error: '',
     loading: false,
-    availBalance: 0
+    availBalance: 0,
   });
- // const [availBalance, setAvailBalance] = useState(0);
+  // const [availBalance, setAvailBalance] = useState(0);
   const onTransferAmount = () => {
     setState(prevState => ({
       ...prevState,
@@ -68,18 +68,6 @@ const MoneyTransfer = ({navigation}) => {
       }
     });
   }, []);
-
-  // useEffect(() => {
-  //   auth.listAccounts('deposit', auth.state.clientId).then(data => {
-  //     if (data.status === 'success') {
-  //       auth
-  //         .findAccounts('deposit', data.accounts[0]['accountId'])
-  //         .then(data => {
-  //           setAvailBalance(data['account']['availableBalance']);
-  //         });
-  //     }
-  //   });
-  // }, []);
 
   const handleChange = value => {
     setState(prevState => ({
