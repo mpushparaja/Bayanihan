@@ -19,11 +19,12 @@ const MoneyTransfer = ({navigation}) => {
   const auth = context();
   const [state, setState] = useState({
     senderaccountid: '',
-    amount: 0,
+    amount: '',
     error: '',
     loading: false,
+    availBalance: 0
   });
-  const [availBalance, setAvailBalance] = useState(0);
+ // const [availBalance, setAvailBalance] = useState(0);
   const onTransferAmount = () => {
     setState(prevState => ({
       ...prevState,
@@ -52,27 +53,33 @@ const MoneyTransfer = ({navigation}) => {
   };
 
   useEffect(() => {
+    setState(prevState => ({
+      ...prevState,
+      loading: true,
+    }));
     auth.listAccounts('deposit', auth.state.clientId).then(data => {
       if (data.status === 'success') {
         setState(prevState => ({
           ...prevState,
           senderaccountid: data.accounts[0]['accountId'],
+          availBalance: data.accounts[0]['availableBalance'],
+          loading: false,
         }));
       }
     });
   }, []);
 
-  useEffect(() => {
-    auth.listAccounts('deposit', auth.state.clientId).then(data => {
-      if (data.status === 'success') {
-        auth
-          .findAccounts('deposit', data.accounts[0]['accountId'])
-          .then(data => {
-            setAvailBalance(data['account']['availableBalance']);
-          });
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   auth.listAccounts('deposit', auth.state.clientId).then(data => {
+  //     if (data.status === 'success') {
+  //       auth
+  //         .findAccounts('deposit', data.accounts[0]['accountId'])
+  //         .then(data => {
+  //           setAvailBalance(data['account']['availableBalance']);
+  //         });
+  //     }
+  //   });
+  // }, []);
 
   const handleChange = value => {
     setState(prevState => ({
@@ -117,14 +124,14 @@ const MoneyTransfer = ({navigation}) => {
           </View>
           <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Available Balance</Text>
-            <Text>{availBalance}</Text>
+            <Text>{state.availBalance}</Text>
           </View>
           <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Amount</Text>
             <TextInput
               style={styles.input}
               onChangeText={handleChange}
-              value={parseInt(state.amount)}
+              value={state.amount}
               onSubmitEditing={Keyboard.dismiss}
               placeholder="XXXX"
               blurOnSubmit={false}
