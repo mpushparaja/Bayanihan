@@ -32,8 +32,7 @@ const FundTransferView = ({navigation, route}) => {
           receipientDetails: data.recipients,
           loading: false,
         }));
-      }
-      else {
+      } else {
         setRecipient(prevState => ({
           ...prevState,
           loading: false,
@@ -42,13 +41,13 @@ const FundTransferView = ({navigation, route}) => {
     });
   }, [route]);
 
-  const toView = (item) => () => {
+  const toView = item => () => {
     auth.setState(prevState => ({
       ...prevState,
       fundsView: item,
     }));
-    navigation.navigate('FundAccountView')
-  }
+    navigation.navigate('FundAccountView');
+  };
 
   return (
     <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
@@ -56,31 +55,38 @@ const FundTransferView = ({navigation, route}) => {
         <View style={styles.btnWrapper}>
           <TouchableOpacity
             style={styles.addRecp}
-            onPress={() => navigation.navigate('AddRecipient')}
+            onPress={() => navigation.navigate('Add Recipient')}
             activeOpacity={0.5}>
-            <Text style={styles.buttonTextStyle}>Add recepeint</Text>
+            <Text style={styles.buttonTextStyle}>Add recipient</Text>
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={styles.title}>All Receipients</Text>
+          <Text style={styles.title}>All Recipients</Text>
         </View>
         {receipient.receipientDetails.map((item, index) => (
           <View key={index} style={styles.wrapperItems}>
-            <TouchableOpacity
-                onPress={toView(item)}
-                activeOpacity={0.5}>
+            <TouchableOpacity onPress={toView(item)} activeOpacity={0.5}>
               <View style={styles.recpList}>
                 <View>
-                  <Text style={styles.fontBold}>{item.firstName} {item.lastName}</Text>
+                  <Text style={styles.fontBold}>
+                    {item.firstName} {item.lastName}
+                  </Text>
                   <Text>{item.accountNumber}</Text>
                 </View>
-                <Image style={styles.arrowImage} source={require('../../assets/right-arrow.png')} />
+                <Image
+                  style={styles.arrowImage}
+                  source={require('../../assets/right-arrow.png')}
+                />
               </View>
             </TouchableOpacity>
           </View>
         ))}
         {receipient.loading && <ActivityIndicator />}
-        {receipient.receipientDetails.length === 0 ? <Text style={styles.noRecords}>No records</Text>: ''}
+        {receipient.receipientDetails.length === 0 ? (
+          <Text style={styles.noRecords}>No records</Text>
+        ) : (
+          ''
+        )}
       </View>
     </ScrollView>
   );
@@ -113,7 +119,7 @@ const styles = StyleSheet.create({
   recpList: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   noRecords: {
     paddingTop: 10,
@@ -138,7 +144,7 @@ const styles = StyleSheet.create({
   btnWrapper: {
     flex: 1,
     flexDirection: 'row-reverse',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   buttonTextStyle: {
     color: '#fff',

@@ -93,7 +93,7 @@ const MyRoutes = () => {
               name="FundTransferView"
               component={FundTransferView}
               options={{
-                title: 'Receipients',
+                title: 'Recipient',
                 headerTintColor: '#fff',
                 headerStyle: {
                   backgroundColor: '#01403c',
@@ -126,20 +126,17 @@ const MyRoutes = () => {
             <Stack.Screen
               name="FundAccountView"
               options={{
-                title: 'Receipient Details',
+                title: 'Recipient Details',
                 headerTintColor: '#fff',
                 headerStyle: {
                   backgroundColor: '#01403c',
                 },
-              }}
-            >
-              {props => (
-              <FundAccountView {...props} />
-            )}
+              }}>
+              {props => <FundAccountView {...props} />}
             </Stack.Screen>
-            {/* Add receipient view  */}
+            {/* Add recipient view  */}
             <Stack.Screen
-              name="AddRecipient"
+              name="Add Recipient"
               component={AddRecipient}
               options={{
                 headerTintColor: '#fff',
