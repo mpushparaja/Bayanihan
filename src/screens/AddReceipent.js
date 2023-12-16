@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
-import TextField from './TextField'
+import TextField from './TextField';
 import Loader from './Loader';
 
 /**
@@ -22,14 +22,20 @@ const AddRecipient = ({navigation}) => {
   const accountnumberInputRef = useRef();
   const confirmaccountnumberInputRef = useRef();
   const auth = context();
-  const [state, setAdd] = useState({firstname: '', lastname: '', accountnumber: '', confirmaccountnumber:'', error: ''});
+  const [state, setAdd] = useState({
+    firstname: '',
+    lastname: '',
+    accountnumber: '',
+    confirmaccountnumber: '',
+    error: '',
+  });
 
   const handleChange = name => value => {
     setAdd(prevState => ({
       ...prevState,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const onConfirmAdd = () => {
     auth.setState(prevState => ({
@@ -43,16 +49,21 @@ const AddRecipient = ({navigation}) => {
           ...prevState,
           loading: false,
         }));
-        navigation.navigate('FundTransferView', {'paramPropKey': 'paramPropValue'});
+        navigation.navigate('FundTransferView', {
+          paramPropKey: 'paramPropValue',
+        });
       } else {
+        if (data.code) {
+          Alert.alert('Info', data.code);
+        }
         auth.setState(prevState => ({
           ...prevState,
           loading: false,
-          error: data.code
+          error: data.code,
         }));
       }
     });
-  }
+  };
 
   const onAdd = () => {
     if (!state.firstname) {
@@ -82,19 +93,24 @@ const AddRecipient = ({navigation}) => {
         text: 'Cancel',
       },
     ]);
-  }
+  };
 
-  const submitEditing = (input) => () => {
-    return input.current && input.current.focus()
-  }
+  const submitEditing = input => () => {
+    return input.current && input.current.focus();
+  };
 
   const checkDisabled = () => {
     let disabled = true;
-    if(state.firstname && state.lastname && state.accountnumber && state.confirmaccountnumber) {
+    if (
+      state.firstname &&
+      state.lastname &&
+      state.accountnumber &&
+      state.confirmaccountnumber
+    ) {
       disabled = false;
     }
     return disabled;
-  }
+  };
 
   const addButtonStyle = [
     styles.btnWrapper,
@@ -105,7 +121,10 @@ const AddRecipient = ({navigation}) => {
 
   return (
     <KeyboardAvoidingView>
-      <ScrollView nestedScrollEnabled={true} style={styles.scrollView} keyboardShouldPersistTaps='always'>
+      <ScrollView
+        nestedScrollEnabled={true}
+        style={styles.scrollView}
+        keyboardShouldPersistTaps="always">
         <Loader loading={auth.state.loading} />
         <View style={GenericStyles.container}>
           <View>
@@ -199,7 +218,7 @@ const styles = StyleSheet.create({
   },
   error: {
     paddingTop: 25,
-    color: '#ff0000'
+    color: '#ff0000',
   },
   btnContainer: {
     paddingTop: 30,
