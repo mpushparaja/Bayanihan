@@ -11,20 +11,20 @@ import {
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
 import Loader from './Loader';
+import Dropdown from './Dropdown';
 
 /**
  * Functional component variables
  */
 const MoneyTransfer = ({navigation}) => {
   const auth = context();
+  const [selected, setSelected] = useState({accountId: 0, availableBalance: 0});
   const [state, setState] = useState({
-    senderaccountid: '',
     amount: '',
     error: '',
     loading: false,
-    availBalance: 0
+    accounts: []
   });
- // const [availBalance, setAvailBalance] = useState(0);
   const onTransferAmount = () => {
     setState(prevState => ({
       ...prevState,
@@ -32,7 +32,7 @@ const MoneyTransfer = ({navigation}) => {
     }));
     auth
       .moneyTransfer(
-        state.senderaccountid,
+        selected.accountId,
         auth.state.fundsView.id,
         state.amount,
       )
@@ -61,25 +61,12 @@ const MoneyTransfer = ({navigation}) => {
       if (data.status === 'success') {
         setState(prevState => ({
           ...prevState,
-          senderaccountid: data.accounts[0]['accountId'],
-          availBalance: data.accounts[0]['availableBalance'],
+          accounts: data.accounts,
           loading: false,
         }));
       }
     });
   }, []);
-
-  // useEffect(() => {
-  //   auth.listAccounts('deposit', auth.state.clientId).then(data => {
-  //     if (data.status === 'success') {
-  //       auth
-  //         .findAccounts('deposit', data.accounts[0]['accountId'])
-  //         .then(data => {
-  //           setAvailBalance(data['account']['availableBalance']);
-  //         });
-  //     }
-  //   });
-  // }, []);
 
   const handleChange = value => {
     setState(prevState => ({
@@ -99,7 +86,7 @@ const MoneyTransfer = ({navigation}) => {
 
   const sendButtonStyle = [
     styles.btnWrapper,
-    state.amount <= 0 && {
+    (Number(state.amount) <= 0 || selected.availableBalance <= 0) && {
       opacity: 0.5,
     },
   ];
@@ -120,12 +107,12 @@ const MoneyTransfer = ({navigation}) => {
           </View>
           <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Account Number</Text>
-            <Text>{auth.state.fundsView.accountNumber}</Text>
+            <Dropdown label="Select Account" data={state.accounts} onSelect={setSelected} />
           </View>
-          <View style={styles.viewWrapper}>
+          {selected.availableBalance > 0 && <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Available Balance</Text>
-            <Text>{state.availBalance}</Text>
-          </View>
+            <Text>{selected.availableBalance}</Text>
+          </View>}
           <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Amount</Text>
             <TextInput
@@ -145,7 +132,7 @@ const MoneyTransfer = ({navigation}) => {
           <TouchableOpacity
             style={sendButtonStyle}
             onPress={onTransferRequest}
-            disabled={state.amount > 0 ? false : true}
+            disabled={(state.amount > 0 && selected.availableBalance > 0) ? false : true}
             activeOpacity={0.5}>
             <Text style={styles.buttonTextStyle}>Send</Text>
           </TouchableOpacity>
