@@ -35,7 +35,7 @@ const MoneyTransfer = ({navigation}) => {
         selected.accountId,
         auth.state.fundsView.id,
         state.amount,
-        auth.state.fundsView.bic
+        auth.state.fundsView.is_intrabank
       )
       .then(data => {
         if (data.status === 'success') {
@@ -58,8 +58,10 @@ const MoneyTransfer = ({navigation}) => {
       ...prevState,
       loading: true,
     }));
+
     auth.listAccounts('deposit', auth.state.clientId).then(data => {
       if (data.status === 'success') {
+
         setState(prevState => ({
           ...prevState,
           accounts: data.accounts,

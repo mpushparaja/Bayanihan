@@ -189,6 +189,9 @@ const AddRecipient = ({navigation}) => {
               }
             </View>
           </View>
+          {state.transferType ? <View style={styles.inputView}>
+            <Dropdown label="BIC" data={state.banks} labelName={'bank_name'} isSearch={true} onSelect={optionSelected('BICFI', 'bank_name')} />
+          </View>: ''}
           <View style={styles.inputView}>
             <TextField
               onChangeText={handleChange('firstname')}
@@ -212,9 +215,6 @@ const AddRecipient = ({navigation}) => {
               returnKeyType="next"
             />
           </View>
-          {state.transferType ? <View style={styles.inputView}>
-            <Dropdown label="BIC" data={state.banks} labelName={'bank_name'} isSearch={true} onSelect={optionSelected('BICFI', 'bank_name')} />
-          </View>: ''}
           <View style={styles.inputView}>
             <TextField
               onChangeText={handleChange('accountnumber')}

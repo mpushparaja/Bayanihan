@@ -41,7 +41,7 @@ export const Provider = ({children}) => {
     }
   };
 
-  const moneyTransfer = async (senderaccountid, recipientid, amount, branchid) => {
+  const moneyTransfer = async (senderaccountid, recipientid, amount, isintrabank) => {
     try {
       let url = 'deposit/transaction/moneytransfer'
       let body = {
@@ -49,11 +49,11 @@ export const Provider = ({children}) => {
         recipientid: recipientid,
         amount: amount,
       }
-      if (branchid) {
+      if (isintrabank === 0
+        ) {
         url = 'deposit/transaction/pesonet/add'
-        body = {...body, ...{
-          branchid: branchid
-        }}
+        body = {...body
+        }
       }
       const response = await fetch(
         config.API_URL + url,
