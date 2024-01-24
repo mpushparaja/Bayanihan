@@ -24,7 +24,6 @@ const Dropdown = ({ label, data, onSelect, labelName, isSearch = false }) => {
 
   const openDropdown = () => {
     DropdownButton.current.measure((_fx, _fy, _w, h, _px, py) => {
-      console.log('r', py)
       setDropdownTop({top: py + h, left: _px});
     });
     setVisible(true);

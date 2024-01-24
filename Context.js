@@ -41,21 +41,29 @@ export const Provider = ({children}) => {
     }
   };
 
-  const moneyTransfer = async (senderaccountid, recipientid, amount) => {
+  const moneyTransfer = async (senderaccountid, recipientid, amount, branchid) => {
     try {
+      let url = 'deposit/transaction/moneytransfer'
+      let body = {
+        senderaccountid: senderaccountid,
+        recipientid: recipientid,
+        amount: amount,
+      }
+      if (branchid) {
+        url = 'deposit/transaction/pesonet/add'
+        body = {...body, ...{
+          branchid: branchid
+        }}
+      }
       const response = await fetch(
-        config.API_URL + 'deposit/transaction/moneytransfer',
+        config.API_URL + url,
         {
           method: 'POST',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            senderaccountid: senderaccountid,
-            recipientid: recipientid,
-            amount: amount,
-          }),
+          body: JSON.stringify(body),
         },
       );
       const responseJson = await response.json();
@@ -79,7 +87,6 @@ export const Provider = ({children}) => {
         bankname: auth.bankname
       }}
     }
-    console.log('data', data)
     try {
       const response = await fetch(config.API_URL + 'recipient/add', {
         method: 'POST',

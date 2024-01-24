@@ -35,6 +35,7 @@ const MoneyTransfer = ({navigation}) => {
         selected.accountId,
         auth.state.fundsView.id,
         state.amount,
+        auth.state.fundsView.bic
       )
       .then(data => {
         if (data.status === 'success') {
@@ -105,6 +106,12 @@ const MoneyTransfer = ({navigation}) => {
               {auth.state.fundsView.firstName} {auth.state.fundsView.lastName}
             </Text>
           </View>
+          {auth.state.fundsView.name ? <View style={styles.viewWrapper}>
+            <Text style={styles.textData}>Branch Name</Text>
+            <Text>
+              {auth.state.fundsView.name}
+            </Text>
+          </View> : ''}
           <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Account Number</Text>
             <Dropdown label="Select Account" data={state.accounts} labelName={'accountNumber'} onSelect={setSelected} />

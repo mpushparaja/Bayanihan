@@ -49,6 +49,7 @@ const FundAccountView = ({navigation}) => {
         <View style={styles.viewWrapper} elevation={2}>
           <Text style={styles.textData}>{auth.state.fundsView.firstName} {auth.state.fundsView.lastName}</Text>
           <Text>{auth.state.fundsView.accountNumber}</Text>
+          {auth.state.fundsView.name ? <Text style={styles.padTop}>{auth.state.fundsView.name}</Text> : ''}
         </View>
         <View style={styles.btnContainer}>
           <TouchableOpacity
@@ -90,6 +91,9 @@ const styles = StyleSheet.create({
       height: 1,
       width: 1,
     },
+  },
+  padTop: {
+    paddingTop: 10
   },
   textData: {
     paddingBottom: 10,
