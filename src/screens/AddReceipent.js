@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -12,6 +12,8 @@ import {
 import {GenericStyles} from '../styles/Styles';
 import {Context as context} from '../../Context';
 import TextField from './TextField';
+import Dropdown from './Dropdown';
+import RadioButton from './RadioButton';
 import Loader from './Loader';
 
 /**
@@ -23,12 +25,35 @@ const AddRecipient = ({navigation}) => {
   const confirmaccountnumberInputRef = useRef();
   const auth = context();
   const [state, setAdd] = useState({
+    transferType: 0,
     firstname: '',
     lastname: '',
     accountnumber: '',
     confirmaccountnumber: '',
     error: '',
+    loading: false,
+    banks: [],
+    bic: '',
+    bankname: '',
   });
+
+  useEffect(() => {
+    if (state.transferType) {
+      setAdd(prevState => ({
+        ...prevState,
+        loading: true,
+      }));
+      auth.getPesonetBanklist().then(data => {
+        if (data.status === 'success') {
+          setAdd(prevState => ({
+            ...prevState,
+            banks: data.banks,
+            loading: false,
+          }));
+        }
+      });
+    }
+  }, [state.transferType]);
 
   const handleChange = name => value => {
     setAdd(prevState => ({
@@ -64,6 +89,14 @@ const AddRecipient = ({navigation}) => {
       }
     });
   };
+
+  const optionSelected = (bic, bankname) => (value) => {
+    setAdd(prevState => ({
+      ...prevState,
+      'bic': value[bic],
+      'bankname': value[bankname]
+    }));
+  }
 
   const onAdd = () => {
     if (!state.firstname) {
@@ -105,7 +138,8 @@ const AddRecipient = ({navigation}) => {
       state.firstname &&
       state.lastname &&
       state.accountnumber &&
-      state.confirmaccountnumber
+      state.confirmaccountnumber &&
+      (!state.transferType || (state.transferType && state.bic))
     ) {
       disabled = false;
     }
@@ -119,6 +153,20 @@ const AddRecipient = ({navigation}) => {
     },
   ];
 
+  const transfers = [
+    {'id': false, 'label': 'Intrabank Transfer'},
+    {'id': true, 'label': 'Interbank Transfer'},
+  ]
+
+  const setChecked = (value) => {
+    setAdd(prevState => ({
+      ...prevState,
+      'transferType': value,
+      'bic': '',
+      'bankname': ''
+    }));
+  }
+
   return (
     <KeyboardAvoidingView>
       <ScrollView
@@ -129,6 +177,17 @@ const AddRecipient = ({navigation}) => {
         <View style={GenericStyles.container}>
           <View>
             <Text style={styles.title}>Create Recipient</Text>
+          </View>
+          <View style={styles.inputView}>
+            <View style={styles.radioWrapper}>
+              {
+                transfers.map((item, radioIndex)=>{
+                  return(
+                    <RadioButton key={radioIndex} item={item} checked={state.transferType} setChecked={setChecked} />
+                  ) 
+                })
+              }
+            </View>
           </View>
           <View style={styles.inputView}>
             <TextField
@@ -153,6 +212,9 @@ const AddRecipient = ({navigation}) => {
               returnKeyType="next"
             />
           </View>
+          {state.transferType ? <View style={styles.inputView}>
+            <Dropdown label="BIC" data={state.banks} labelName={'bank_name'} isSearch={true} onSelect={optionSelected('BICFI', 'bank_name')} />
+          </View>: ''}
           <View style={styles.inputView}>
             <TextField
               onChangeText={handleChange('accountnumber')}
@@ -219,6 +281,10 @@ const styles = StyleSheet.create({
   error: {
     paddingTop: 25,
     color: '#ff0000',
+  },
+  radioWrapper: {
+    flexDirection:"row",
+    flexWrap:"wrap",
   },
   btnContainer: {
     paddingTop: 30,

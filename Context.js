@@ -66,6 +66,20 @@ export const Provider = ({children}) => {
   };
 
   const addRecipient = async (auth, clientid) => {
+    let data = {
+      clientid: clientid.toString(),
+      firstname: auth.firstname,
+      lastname: auth.lastname,
+      accountnumber: auth.accountnumber,
+      isintrabank: !auth.transferType
+    }
+    if (auth.transferType) {
+      data = {...data, ...{
+        bic: auth.bic,
+        bankname: auth.bankname
+      }}
+    }
+    console.log('data', data)
     try {
       const response = await fetch(config.API_URL + 'recipient/add', {
         method: 'POST',
@@ -73,12 +87,7 @@ export const Provider = ({children}) => {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          clientid: clientid.toString(),
-          firstname: auth.firstname,
-          lastname: auth.lastname,
-          accountnumber: auth.accountnumber,
-        }),
+        body: JSON.stringify(data),
       });
       const responseJson = await response.json();
       return responseJson;
@@ -226,6 +235,25 @@ export const Provider = ({children}) => {
     }
   };
 
+  const getPesonetBanklist = async () => {
+    try {
+      const response = await fetch(
+        config.API_URL + '/deposit/transaction/pesonet/banklist',
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const responseJson = await response.json();
+      return responseJson;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const getToken = async () => {
     try {
       const resp = await AsyncStorage.getItem('userToken');
@@ -263,6 +291,7 @@ export const Provider = ({children}) => {
         deleteRecipient,
         listRecipient,
         moneyTransfer,
+        getPesonetBanklist,
       }}>
       {children}
     </MyContext.Provider>

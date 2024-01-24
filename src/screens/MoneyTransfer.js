@@ -107,7 +107,7 @@ const MoneyTransfer = ({navigation}) => {
           </View>
           <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Account Number</Text>
-            <Dropdown label="Select Account" data={state.accounts} onSelect={setSelected} />
+            <Dropdown label="Select Account" data={state.accounts} labelName={'accountNumber'} onSelect={setSelected} />
           </View>
           {selected.availableBalance > 0 && <View style={styles.viewWrapper}>
             <Text style={styles.textData}>Available Balance</Text>
