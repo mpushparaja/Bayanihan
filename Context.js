@@ -44,16 +44,8 @@ export const Provider = ({children}) => {
   const moneyTransfer = async (senderaccountid, recipientid, amount, isintrabank) => {
     try {
       let url = 'deposit/transaction/moneytransfer'
-      let body = {
-        senderaccountid: senderaccountid,
-        recipientid: recipientid,
-        amount: amount,
-      }
-      if (isintrabank === 0
-        ) {
+      if (isintrabank === 0) {
         url = 'deposit/transaction/pesonet/add'
-        body = {...body
-        }
       }
       const response = await fetch(
         config.API_URL + url,
@@ -63,7 +55,11 @@ export const Provider = ({children}) => {
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(body),
+          body: JSON.stringify({
+            senderaccountid: senderaccountid,
+            recipientid: recipientid,
+            amount: amount,
+          }),
         },
       );
       const responseJson = await response.json();
